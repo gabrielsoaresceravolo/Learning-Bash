@@ -1,39 +1,49 @@
 #!/bin/bash
 
-echo "Digite o caminho que você deseja criar o backup: "
-read -r origem 
+clear
 
 data=$(date +"%Y-%m-%d")
 
-destino="/backup/backup_$data"
+cor-vermelha='\033[0;31m'
+cor-verde='\033[0;32m'
+cor-padrao='\033[0m'
+
+echo "Digite o caminho que você deseja criar um backup: "
+read -r origem 
+
+echo -e "\nDigite o caminho para o local onde você deseja guardar seu backup: "
+read -r destino
+
+# Adiciona a data ao destino do backup
+destinoReformulado="$destino/Backup.$origem - $data"
 
 # ======================================================================
 # Verifica se os caminhos existem
 
 if [ ! -d "$origem" ]; then
-    echo "Erro: O diretório de origem '$origem' não existe."
+    echo -e "\n${cor-vermelha}Erro: O diretório de origem '$origem' não existe!${cor-padrao}"
     exit 1
 fi
 
 if [ ! -d "$destino" ]; then
-    echo "Criando o diretório de destino '$destino'..."
-    sudo mkdir -p "$destino" 
+    echo "\nCriando o diretório de destino '$destino'..."
+    sudo mkdir -p "$destinoReformulado" 
 fi
 
 # ======================================================================
 # Verifica se os caminhos existem
 
-echo "Iniciando o backup..." 
-echo "("$origem") para ("$destino")"
-sudo rsync -av --delete "$origem/" "$destino/"
+echo -e "\nIniciando o backup..." 
+echo "("$origem") para ("$destinoReformulado")"
+sudo rsync -a --delete "$origem/" "$destinoReformulado/"
 
 # ======================================================================
 # Verifica se o backup foi criado
 
 if [ $? -eq 0 ]; then
-    echo "Backup Finalizado"
+    echo -e "\n${cor-verde}Backup Finalizado com sucesso!${cor-padrao}"
 else
-    echo "Erro ao execultar o backup"
+    echo -e "\n${cor-vermelha}Erro ao gerar o backup!${cor-padrao}"
 fi
 
 # ======================================================================
@@ -44,12 +54,9 @@ fi
 # (exit 1) 					--> Encerra o script
 # (if [ $? -eq 0 ]; then) 	--> $? é uma variável especial que contém o status do último comando executado
 
-
-
-# (rsync -av --delete "$origem/" "$destino/")
+# (rsync -a --delete "$origem/" "$destino/")
 #
 #  -a: Ativa o modo de cópia recursiva preservando permissões, timestamps, etc.
-#  -v: Ativa a saída detalhada, mostrando quais arquivos estão sendo copiados
 #
 # --delete: Essa opção faz com que os arquivos no diretório de destino sejam excluídos 
 #           se não existirem no diretório de origem durante a sincronização
