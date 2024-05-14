@@ -4,9 +4,9 @@ clear
 
 data=$(date +"%Y-%m-%d")
 
-cor-vermelha='\033[0;31m'
-cor-verde='\033[0;32m'
-cor-padrao='\033[0m'
+cor_vermelha='\033[0;31m'
+cor_verde='\033[0;32m'
+cor_padrao='\033[0m'
 
 echo "Digite o caminho que você deseja criar um backup: "
 read -r origem 
@@ -15,13 +15,13 @@ echo -e "\nDigite o caminho para o local onde você deseja guardar seu backup: "
 read -r destino
 
 # Adiciona a data ao destino do backup
-destinoReformulado="$destino/Backup.$origem - $data"
+destinoReformulado="$destino/Backup.$(basename $origem) - $data"
 
 # ======================================================================
 # Verifica se os caminhos existem
 
 if [ ! -d "$origem" ]; then
-    echo -e "\n${cor-vermelha}Erro: O diretório de origem '$origem' não existe!${cor-padrao}"
+    echo -e "\n${cor_vermelha}Erro: O diretório de origem '$origem' não existe!${cor_padrao}"
     exit 1
 fi
 
@@ -41,9 +41,9 @@ sudo rsync -a --delete "$origem/" "$destinoReformulado/"
 # Verifica se o backup foi criado
 
 if [ $? -eq 0 ]; then
-    echo -e "\n${cor-verde}Backup Finalizado com sucesso!${cor-padrao}"
+    echo -e "\n${cor_verde}Backup Finalizado com sucesso!${cor_padrao}"
 else
-    echo -e "\n${cor-vermelha}Erro ao gerar o backup!${cor-padrao}"
+    echo -e "\n${cor_vermelha}Erro ao gerar o backup!${cor_padrao}"
 fi
 
 # ======================================================================
