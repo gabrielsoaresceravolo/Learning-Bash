@@ -41,9 +41,9 @@ sudo rsync -a --delete "$origem/" "$destinoReformulado/"
 # Verifica se o backup foi criado
 
 if [ $? -eq 0 ]; then
-    echo -e "\n${cor_verde}Backup Finalizado com sucesso!${cor_padrao}"
+    echo -e "\n${cor_verde}Backup Finalizado com sucesso!${cor_padrao}\n"
 else
-    echo -e "\n${cor_vermelha}Erro ao gerar o backup!${cor_padrao}"
+    echo -e "\n${cor_vermelha}Erro ao gerar o backup!${cor_padrao}\n"
 fi
 
 # ======================================================================
