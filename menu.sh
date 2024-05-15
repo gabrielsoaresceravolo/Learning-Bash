@@ -5,8 +5,8 @@ data=$(date +"%Y-%m-%d")
 cor_vermelha='\033[0;31m'
 cor_verde='\033[0;32m'
 cor_amarela='\033[33m'
+
 cor_padrao='\033[0m'
-cor_marinha='\33[38;2;0;128;128m'
 
 # Informações do Sistema
 infoSistema()
@@ -16,41 +16,16 @@ infoSistema()
 
     echo -e "\nBuscando Informações...\n"
 
-    # Verifica se o comando lsb_release está disponível
-    if ! command -v lsb_release &> /dev/null; then
-        echo -e "\n${cor_vemelha}Erro: Comando 'lsb_release' não encontrado!${cor_padrao}\n"
-        read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
-        echo ""
-        mostrarMenu
-    fi
-
-    # Verifica se o comando apt está disponível
-    if ! command -v apt &> /dev/null; then
-        echo -e "\n${cor_vemelha}Erro: Comando 'apt' não encontrado!${cor_padrao}\n"
-        read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
-        echo ""
-        mostrarMenu
-    fi
-
     # Informações da Distribuição
     # Versão do Sistema
     # Administrador da Máquina
     # Data da última Atualização
 
-    distro=$(lsb_release -d | awk -F ":" '{print $2}' | tr -d '[:space:]')
+    source /etc/os-release
+    distro="$PRETTY_NAME"
     kernel_version=$(uname -r)
     owner=$(whoami)
     last_update=$(stat -c "%y" /etc/passwd /etc/group /etc/shadow | sort -r | head -n 1 | awk '{print $1}')
-
-    # Sistema está Atualizado?
-    sudo apt update > /dev/null 2>&1
-    if [ $? -ne 0 ]; then
-        echo -e "\n${cor_vemelha}Erro: Falha ao atualizar lista de pacotes!${cor_padrao}\n" >&2
-        read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
-        echo ""
-        mostrarMenu
-    fi
-
     update_status=$(apt list --upgradable 2>/dev/null | wc -l)
 
     if [[ $update_status -gt 1 ]]; then
@@ -73,17 +48,10 @@ attSistema()
 {
     clear
 
-    cat << "EOF"
-    ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
-
-    Você deseja atualizar apenas o necessário ou uma atualização geral?
-    [ /att  ] Atualizar Apenas o Necessário
-    [ /+att ] Atualizar o Sistema Geral
-    [ /menu ] Voltar Para o Menu Principal
-
-    ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
-
-EOF
+    echo -e "\nVocê deseja atualizar apenas o necessário ou uma atualização geral?\n"
+    echo -e "${cor_amarela}[  ${cor_padrao}/att   ${cor_amarela}]${cor_padrao} - Atualizar Apenas o Necessário"
+    echo -e "${cor_amarela}[  ${cor_padrao}/+att  ${cor_amarela}]${cor_padrao} - Atualizar o Sistema Geral"
+    echo -e "${cor_amarela}[  ${cor_padrao}/menu  ${cor_amarela}]${cor_padrao} - Voltar Para o Menu Principal\n"
 
     read -p "Escolha uma opção: " resposta
 
@@ -305,17 +273,10 @@ fileMenu()
 {
     clear
 
-    cat << "EOF"
+    echo -e "\n${cor_amarelo}[ ${cor_padrao}/tar  ${cor_amarelo}]${cor_padrao} - Empacotar Pasta de Arquivos"
+    echo -e "\n${cor_amarelo}[ ${cor_padrao}/-tar ${cor_amarelo}]${cor_padrao} - Desempacotar Pasta de Arquivos"
+    echo -e "\n${cor_amarelo}[ ${cor_padrao}/menu ${cor_amarelo}]${cor_padrao} - Voltar Para o Menu Principal"
 
-    ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
-
-    [ /tar  ] Empacotar Pasta de Arquivos
-    [ /-tar ] Desempacotar Pasta de Arquivos
-    [ /menu ] Voltar Para o Menu Principal
-
-    ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
-
-EOF
 
     read -p "Escolha uma opção: " opcao
 
@@ -372,6 +333,7 @@ empacotar()
 desempacotar()
 {
     clear
+
     echo "### Desempacotar Pasta de Arquivos ###"
     read -p "Digite o caminho completo do arquivo compactado que deseja desempacotar: " caminho_origem
     if [ ! -f "$caminho_origem" ]; then
@@ -468,17 +430,10 @@ sobreScript()
 
 sair()
 {
-    cat << "EOF"
 
-    ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
-
-    Você Deseja Realmente sair?
-    [ S / N ] - [[ Sim ou Não ]]
-
-    ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
-
-EOF
-
+    echo -e "\nVocê Deseja Realmente sair?"
+    echo -e "${cor_amarela}[ ${cor_padrao}S ${cor_amarela}/${cor_padrao} N ${cor_amarela}]${cor_padrao} - ${cor_amarela}[[${cor_padrao} Sim ${cor_amarela}ou${cor_padrao} Não ${cor_amarela}]]${cor_padrao}\n"
+    
     read -p " " resposta
     resposta=$(echo "$resposta" | tr '[:upper:]' '[:lower:]')
 
@@ -505,8 +460,8 @@ mostrarMenu()
 
     clear
 
-    cat << "EOF" 
-${cor_vermelha}
+    cat << EOF 
+
 
     ▄█     █▄      ▄████████        ▄████████  ▄██   ▄       ▄████████       ███        ▄████████    ▄▄▄▄███▄▄▄▄
    ███     ███    ███    ███       ███    ███  ███   ██▄    ███    ███  ▀█████████▄    ███    ███  ▄██▀▀▀███▀▀▀██▄
@@ -519,19 +474,19 @@ ${cor_vermelha}
 
 ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
 
-      ---------------------- ${cor_amarela}[ ${cor_vermelha}@Gabriel.Strider ${cor_amarela}|| ${cor_vermelha}Menu de Interações ${cor_amarela}|| ${cor_vermelha}WS.System ${cor_padrao}V1.0 ${cor_amarela}] ${cor_vermelha}----------------------
+      ---------------------- [ @Gabriel.Strider || Menu de Interações || WS.System V1.0 ] ----------------------
 
-                                     ${cor_amarela}[  ${cor_vermelha}/info   ${cor_amarela}]   ${cor_amarela}[[  ${cor_padrao}Informações do Sistema    ${cor_amarela}]]
-                                     ${cor_amarela}[  ${cor_vermelha}/att    ${cor_amarela}]   ${cor_amarela}[[  ${cor_padrao}Atualizar Sistema         ${cor_amarela}]]
-                                     ${cor_amarela}[  ${cor_vermelha}/ssh    ${cor_amarela}]   ${cor_amarela}[[  ${cor_padrao}Serviço de SSH            ${cor_amarela}]]
-                                     ${cor_amarela}[  ${cor_vermelha}/proxy  ${cor_amarela}]   ${cor_amarela}[[  ${cor_padrao}Serviço de Proxy          ${cor_amarela}]]
-                                     ${cor_amarela}[  ${cor_vermelha}/rede   ${cor_amarela}]   ${cor_amarela}[[  ${cor_padrao}Informações de Rede       ${cor_amarela}]]
-                                     ${cor_amarela}[  ${cor_vermelha}/file   ${cor_amarela}]   ${cor_amarela}[[  ${cor_padrao}Empacotar / Desempacotar  ${cor_amarela}]]
-                                     ${cor_amarela}[  ${cor_vermelha}/save   ${cor_amarela}]   ${cor_amarela}[[  ${cor_padrao}Criar um Backup           ${cor_amarela}]]
-                                     ${cor_amarela}[  ${cor_vermelha}/sobre  ${cor_amarela}]   ${cor_amarela}[[  ${cor_padrao}Sobre                     ${cor_amarela}]]
-                                     ${cor_amarela}[  ${cor_vermelha}/exit   ${cor_amarela}]   ${cor_amarela}[[  ${cor_padrao}Sair                      ${cor_amarela}]]
+                                     [  /info   ]   [[  Informações do Sistema    ]]
+                                     [  /att    ]   [[  Atualizar Sistema         ]]
+                                     [  /ssh    ]   [[  Serviço de SSH            ]]
+                                     [  /proxy  ]   [[  Serviço de Proxy          ]]
+                                     [  /rede   ]   [[  Informações de Rede       ]]
+                                     [  /file   ]   [[  Empacotar / Desempacotar  ]]
+                                     [  /save   ]   [[  Criar um Backup           ]]
+                                     [  /sobre  ]   [[  Sobre                     ]]
+                                     [  /exit   ]   [[  Sair                      ]]
 
-${cor_vermelha}▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄${cor_padrao}
+▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
 
 EOF
 }
