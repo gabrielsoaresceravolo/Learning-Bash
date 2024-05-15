@@ -1,8 +1,10 @@
 #!/bin/bash
 
-# \e[31m - Vemelho
-# \e[32m - Verde
-# \e[0m  - Padrão
+data=$(date +"%Y-%m-%d")
+
+cor_vermelha='\033[0;31m'
+cor_verde='\033[0;32m'
+cor_padrao='\033[0m'
 
 # Informações do Sistema
 infoSistema()
@@ -11,20 +13,25 @@ infoSistema()
 
     # Verifica se o comando lsb_release está disponível
     if ! command -v lsb_release &> /dev/null; then
-        echo -e "\e[31mErro: Comando 'lsb_release' não encontrado!\e[0m"
-        return 1
+        echo -e "\n${cor_vemelha}Erro: Comando 'lsb_release' não encontrado!${cor_padrao}\n"
+        read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
+        echo ""
+        mostrarMenu
     fi
 
     # Verifica se o comando apt está disponível
     if ! command -v apt &> /dev/null; then
-        echo -e "\e[31mErro: Comando 'apt' não encontrado!\e[0m"
-        return 1
+        echo -e "\n${cor_vemelha}Erro: Comando 'apt' não encontrado!${cor_padrao}\n"
+        read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
+        echo ""
+        mostrarMenu
     fi
 
     # Informações da Distribuição
     # Versão do Sistema
     # Administrador da Máquina
     # Data da última Atualização
+
     distro=$(lsb_release -d | awk -F ":" '{print $2}' | tr -d '[:space:]')
     kernel_version=$(uname -r)
     owner=$(whoami)
@@ -33,27 +40,31 @@ infoSistema()
     # Sistema está Atualizado?
     sudo apt update > /dev/null 2>&1
     if [ $? -ne 0 ]; then
-        echo -e "\e[31mErro: Falha ao atualizar lista de pacotes!\e[0m" >&2
-        return 1
+        echo -e "\n${cor_vemelha}Erro: Falha ao atualizar lista de pacotes!${cor_padrao}\n" >&2
+        read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
+        echo ""
+        mostrarMenu
     fi
 
     update_status=$(apt list --upgradable 2>/dev/null | wc -l)
 
     if [[ $update_status -gt 1 ]]; then
         system_update="( Desatualizado )"
-        color="\e[31m"
+        color="${cor_vemelha}"
     else
         system_update="( Atualizado )"
-        color="\e[32m"
+        color="${cor_verde}"
     fi
 
-    echo -e "[ Distribuição Linux ] - $distro"
+    echo -e "\n\n[ Distribuição Linux ] - $distro"
     echo -e "[ Versão do Linux    ] - $kernel_version"
     echo -e "[ Dono da máquina    ] - $owner"
     echo -e "[ Última atualização ] - $last_update"
-    echo -e "[ Status da Máquina  ] - ${color}$system_update\e[0m"
-    echo " "
-    read -p "Pressione Enter para continuar..."
+    echo -e "[ Status da Máquina  ] - ${color}$system_update${cor_padrao}\n\n"
+
+    read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
+    echo ""
+    mostrarMenu
 }
 
 # ======================================================================================================================
@@ -88,62 +99,77 @@ EOF
 atualizarBasico()
 {
     echo ""
-    echo "Atualizando o sistema..."
+    echo -e "\nAtualizando o sistema...\n"
 
     # Atualização básica
     sudo apt update
     if [ $? -ne 0 ]; then
-        echo "\e[31mErro: Falha ao atualizar lista de pacotes!\e[0m"
-        return 1
+        echo "\n${cor_vemelha}Erro: Falha ao atualizar lista de pacotes!${cor_padrao}\n"
+        read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
+        echo ""
+        mostrarMenu
     fi
 
     sudo apt upgrade -y
     if [ $? -ne 0 ]; then
-        echo "\e[31mErro: Falha ao atualizar pacotes!\e[0m"
-        return 1
+        echo "\n${cor_vemelha}Erro: Falha ao atualizar pacotes!${cor_padrao}\n"
+        read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
+        echo ""
+        mostrarMenu
     fi
 
     sudo apt autoremove -y
     if [ $? -ne 0 ]; then
-        echo "\e[31mErro: Falha ao remover pacotes desnecessários!\e[0m"
-        return 1
+        echo "\n${cor_vemelha}Erro: Falha ao remover pacotes desnecessários!${cor_padrao}\n"
+        read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
+        echo ""
+        mostrarMenu
     fi
 
-    echo -e "\e[32mAtualização concluída!\e[0m"
 }
 
 # Atualização Geral
 atualizacaoGeral()
 {
-    echo ""
-    echo "Atualizando o sistema..."
+    echo -e "\nAtualizando o sistema...\n"
 
     # Atualização completa
     sudo apt update
     if [ $? -ne 0 ]; then
-        echo +e "\e[31mErro: Falha ao atualizar lista de pacotes!\e[0m"
-        return 1
+        echo +e "\n${cor_vemelha}Erro: Falha ao atualizar lista de pacotes!${cor_padrao}\n"
+        read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
+        echo ""
+        mostrarMenu
     fi
 
     sudo apt upgrade -y
     if [ $? -ne 0 ]; then
-        echo -e "\e[31mErro: Falha ao atualizar pacotes!\e[0m"
-        return 1
+        echo -e "\n${cor_vemelha}Erro: Falha ao atualizar pacotes!${cor_padrao}\n"
+        read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
+        echo ""
+        mostrarMenu
     fi
 
     sudo apt dist-upgrade -y
     if [ $? -ne 0 ]; then
-        echo -e "\e[31mErro: Falha ao atualizar pacotes com dependências!\e[0m"
-        return 1
+        echo -e "\n${cor_vemelha}Erro: Falha ao atualizar pacotes com dependências!${cor_padrao}\n"
+        read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
+        echo ""
+        mostrarMenu
     fi
 
     sudo apt autoremove -y
     if [ $? -ne 0 ]; then
-        echo -e "\e[31mErro: Falha ao remover pacotes desnecessários!\e[0m"
-        return 1
+        echo -e "\n${cor_vemelha}Erro: Falha ao remover pacotes desnecessários!${cor_padrao}\n"
+        read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
+        echo ""
+        mostrarMenu
     fi
 
-    echo -e "\e[32mAtualização concluída!\e[0m"
+    echo -e "\n${cor_verde}Atualização concluída!${cor_padrao}\n"
+    read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
+    echo ""
+    mostrarMenu
 }
 
 
@@ -157,38 +183,44 @@ sshMenu()
     # Verifica qual o tipo de sistema
     linux_system=$(lsb_release -si | tr '[:upper:]' '[:lower:]')
 
-    echo "Iniciando o Serviço do SSH..."
+    echo -e "\nIniciando o Serviço do SSH...\n"
 
     # Se o Sistema for Ubuntu ou Debian
     if [ "$linux_system" == "ubuntu" ] || [ "$linux_system" == "debian" ]; then
         sudo systemctl start ssh
         if [ $? -eq 0 ]; then
-            echo -e "\e[32mServiço SSH Iniciado e Pronto para Uso!\e[0m"
+            sudo systemctl status ssh
+            read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
+            echo ""
+            mostrarMenu
         else
-            echo -e "\e[31mErro: Falha ao iniciar o serviço SSH!\e[0m"
+            echo -e "\n${cor_vemelha}Erro: Falha ao iniciar o serviço SSH!${cor_padrao}\n"
+            read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
+            echo ""
+            mostrarMenu
         fi
-        sudo systemctl status ssh
-        echo " "
-        read -p "Pressione Enter para continuar..."
 
     # Se o Sistema for CentOS
     elif [ "$linux_system" == "centos" ]; then
         sudo service ssh start
         if [ $? -eq 0 ]; then
-            echo -e "\e[32mServiço SSH Iniciado e Pronto para Uso!\e[0m"
+            sudo service ssh status
+            read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
+            echo ""
+            mostrarMenu
         else
-            echo -e "\e[31mErro: Falha ao iniciar o serviço SSH!\e[0m"
+            echo -e "\n${cor_vemelha}Erro: Falha ao iniciar o serviço SSH!${cor_padrao}\n"
+            read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
+            echo ""
+            mostrarMenu
         fi
-
-        sudo service ssh status
-        echo " "
-        read -p "Pressione Enter para continuar..."
-
+        
     else
-        echo -e "\e[31mServiço SSH Não Instalado ou Não Configurado Corretamente...\e[0m"
+        echo -e "${cor_vemelha}Serviço SSH Não Instalado ou Não Configurado Corretamente...${cor_padrao}"
         echo " "
-        read -p "Pressione Enter para continuar..."
-
+        read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
+        echo ""
+        mostrarMenu
     fi
 }
 
@@ -198,8 +230,7 @@ sshMenu()
 proxyMenu() 
 {
     clear
-    echo "Preparando para configurar o Proxy..."
-    echo ""
+    echo -e "\nPreparando para configurar o Proxy...\n"
     echo "Digite o endereço do proxy: "
     read -r proxy_address
     echo "Digite a porta do proxy: "
@@ -212,9 +243,15 @@ proxyMenu()
 
     # Verifica se houve algum erro!
     if [ $? -eq 0 ]; then
-        echo -e "\e[32mProxy configurado com sucesso!\e[0m"
+        echo -e "\n${cor_verde}Proxy configurado com sucesso!${cor_padrao}\n"
+        read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
+        echo ""
+        mostrarMenu
     else
-        echo -e "\e[31mErro ao configurar o proxy!\e[0m"
+        echo -e "\n${cor_vemelha}Erro ao configurar o proxy!${cor_padrao}\n"
+        read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
+        echo ""
+        mostrarMenu
     fi
 }
 
@@ -224,30 +261,39 @@ proxyMenu()
 # Função para exibir informações de rede
 redeMenu() 
 {
-    echo "Exibindo informações de rede..."
-    echo ""
+    echo "\nExibindo informações de rede...\n"
     
     # Exibe informações de interface de rede
     sudo ip -c -br a
 
     # Verifica se houve algum erro
     if [ $? -eq 0 ]; then
-        echo -e "\e[32mInformações de rede exibidas!\e[0m"
+        echo ""
+        read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
+        echo ""
+        mostrarMenu
     else
-        echo -e "\e[31mErro ao exibir informações de rede!\e[0m"
-        return 1
+        echo -e "\n${cor_vemelha}Erro ao exibir informações de rede!${cor_padrao}\n"
+        read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
+        echo ""
+        mostrarMenu
     fi
 
     # Exibe informações da tabela ARP
-    echo "Exibindo a tabela ARP..."
+    echo -e "\nExibindo a tabela ARP...\n"
     arp -a
 
     # Verifica se houve algum erro durante a execução do comando arp
     if [ $? -eq 0 ]; then
-        echo -e "\e[32mTabela ARP exibida com sucesso!\e[0m"
+        echo ""
+        read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
+        echo ""
+        mostrarMenu
     else
-        echo -e "\e[31mErro ao exibir tabela ARP.\e[0m"
-        return 1
+        echo -e "\n${cor_vemelha}Erro ao exibir tabela ARP.${cor_padrao}\n"
+        read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
+        echo ""
+        mostrarMenu
     fi
 }
 
@@ -295,21 +341,31 @@ empacotar()
     echo "### Empacotar Pasta de Arquivos ###"
     read -p "Digite o caminho completo da pasta que deseja empacotar: " caminho_origem
     if [ ! -d "$caminho_origem" ]; then
-        echo -e "\e[31mErro: O caminho especificado não corresponde a uma pasta válida!\e[0m"
-        return 1
+        echo -e "${cor_vemelha}Erro: O caminho especificado não corresponde a uma pasta válida!${cor_padrao}"
+        read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
+        echo ""
+        mostrarMenu
     fi
 
     read -p "Digite o nome do arquivo de destino para o pacote (com extensão .tar ou .tar.gz): " nome_arquivo
     if [[ ! "$nome_arquivo" =~ \.tar(\.gz)?$ ]]; then
-        echo -e "\e[31mErro: O nome do arquivo de destino deve ter a extensão .tar ou .tar.gz!\e[0m"
-        return 1
+        echo -e "${cor_vemelha}Erro: O nome do arquivo de destino deve ter a extensão .tar ou .tar.gz!${cor_padrao}"
+        read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
+        echo ""
+        mostrarMenu
     fi
 
     tar -czf "$nome_arquivo" -C "$(dirname "$caminho_origem")" "$(basename "$caminho_origem")"
     if [ $? -eq 0 ]; then
-        echo -e "\e[32mPasta empacotada com sucesso em $nome_arquivo!\e[0m"
+        echo -e "\n${cor_verde}Pasta empacotada com sucesso em $nome_arquivo!${cor_padrao}\n"
+        read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
+        echo ""
+        mostrarMenu
     else
-        echo -e "\e[31mErro ao empacotar a pasta!\e[0m"
+        echo -e "\n${cor_vemelha}Erro ao empacotar a pasta!${cor_padrao}\n"
+        read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
+        echo ""
+        mostrarMenu
     fi
 }
 
@@ -319,32 +375,87 @@ desempacotar()
     echo "### Desempacotar Pasta de Arquivos ###"
     read -p "Digite o caminho completo do arquivo compactado que deseja desempacotar: " caminho_origem
     if [ ! -f "$caminho_origem" ]; then
-        echo -e "\e[31mErro: O arquivo compactado não existe!\e[0m"
-        return 1
+        echo -e "\n${cor_vemelha}Erro: O arquivo compactado não existe!${cor_padrao}\n"
+        read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
+        echo ""
+        mostrarMenu
     fi
 
     read -p "Digite o caminho completo do destino para desempacotar o arquivo: " caminho_destino
     if [ ! -d "$caminho_destino" ]; then
-        echo -e "\e[31mErro: O caminho de destino não corresponde a uma pasta válida!\e[0m"
-        return 1
+        echo -e "\n${cor_vemelha}Erro: O caminho de destino não corresponde a uma pasta válida!${cor_padrao}\n"
+        read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
+        echo ""
+        mostrarMenu
     fi
 
     tar -xzf "$caminho_origem" -C "$caminho_destino"
     if [ $? -eq 0 ]; then
-        echo -e "\e[32mArquivo desempacotado com sucesso em $caminho_destino!\e[0m"
+        echo -e "\n${cor_verde}Arquivo desempacotado com sucesso em $caminho_destino!${cor_padrao}\n"
+        read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
+        echo ""
+        mostrarMenu
     else
-        echo -e "\e[31mErro ao desempacotar o arquivo!\e[0m"
+        echo -e "\n${cor_vemelha}Erro ao desempacotar o arquivo!${cor_padrao}\n"
+        read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
+        echo ""
+        mostrarMenu
     fi
 }
 
 # ======================================================================================================================
 
-# Função para exibir a ajuda
-helpScript()
+# Função para criar backups
+backupScript()
 {
-    echo "Exibindo ajuda..."
-    echo " "
-    read -p "Pressione Enter para continuar..."
+    clear
+
+    echo -e "\n[ Exemplo: /home/user ] Digite o caminho que você deseja criar um backup: "
+    read -r origem 
+
+    echo -e "\n[ Exemplo: /var/backups ] Digite o caminho para o local onde você deseja guardar seu backup: "
+    read -r destino
+
+    # Adiciona a data ao destino do backup
+    destinoReformulado="$destino/BACKUP.$(basename $origem) - $data"
+
+    # ======================================================================
+    # Verifica se os caminhos existem
+
+    if [ ! -d "$origem" ]; then
+        echo -e "\n${cor_vermelha}Erro: O diretório de origem '$origem' não existe!${cor_padrao}"
+        read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
+        echo ""
+        mostrarMenu
+    fi
+
+    if [ ! -d "$destino" ]; then
+        echo "\nCriando o diretório de destino '$destino'..."
+        sudo mkdir -p "$destinoReformulado" 
+    fi
+
+    # ======================================================================
+    # Verifica se os caminhos existem
+
+    echo -e "\nIniciando o backup..." 
+    echo "("$origem") para ("$destinoReformulado")"
+    sudo rsync -a --delete "$origem/" "$destinoReformulado/"
+
+    # ======================================================================
+    # Verifica se o backup foi criado
+
+    if [ $? -eq 0 ]; then
+        echo -e "\n${cor_verde}Backup Finalizado com sucesso!${cor_padrao}\n"
+        read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
+        echo ""
+        mostrarMenu
+    else
+        echo -e "\n${cor_vermelha}Erro ao gerar o backup!${cor_padrao}\n"
+        read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
+        echo ""
+        mostrarMenu
+    fi
+
 }
 
 # ======================================================================================================================
@@ -352,7 +463,7 @@ helpScript()
 # Função para exibir informações sobre o script
 sobreScript()
 {
-    echo "Sobre o script..."
+    echo -e "\nSobre o script...\n"
 }
 
 sair() 
@@ -415,7 +526,7 @@ mostrarMenu()
                                     [ /proxy ]  [[ Serviço de Proxy         ]]
                                     [ /rede  ]  [[ Informações de Rede      ]]
                                     [ /file  ]  [[ Empacotar / Desempacotar ]]
-                                    [ /help  ]  [[ Ajuda                    ]]
+                                    [ /save  ]  [[ Criar um Backup          ]]
                                     [ /sobre ]  [[ Sobre                    ]]
                                     [ /exit  ]  [[ Sair                     ]]
 
@@ -436,11 +547,11 @@ while true; do
         "proxy") proxyMenu ;;
         "rede") redeMenu ;;
         "file") fileMenu ;;
-        "help") helpScript ;;
+        "save") backupScript ;;
         "sobre") sobreScript ;;
         "sair") sair ;;
         *) echo "Opção Inválida..." ;;
     esac
 
-read -p "Pressione Enter para continuar..."
+read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
 done
