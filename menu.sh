@@ -4,12 +4,17 @@ data=$(date +"%Y-%m-%d")
 
 cor_vermelha='\033[0;31m'
 cor_verde='\033[0;32m'
+cor_amarela='\033[33m'
 cor_padrao='\033[0m'
+cor_marinha='\33[38;2;0;128;128m'
 
 # Informações do Sistema
 infoSistema()
 {
+
     clear
+
+    echo -e "\nBuscando Informações...\n"
 
     # Verifica se o comando lsb_release está disponível
     if ! command -v lsb_release &> /dev/null; then
@@ -49,30 +54,25 @@ infoSistema()
     update_status=$(apt list --upgradable 2>/dev/null | wc -l)
 
     if [[ $update_status -gt 1 ]]; then
-        system_update="( Desatualizado )"
-        color="${cor_vemelha}"
+        system_update="${cor_vermelha}( Desatualizado )${cor_padrao}"
     else
-        system_update="( Atualizado )"
-        color="${cor_verde}"
+        system_update="${cor_verde}( Atualizado )${cor_padrao}"
     fi
 
-    echo -e "\n\n[ Distribuição Linux ] - $distro"
-    echo -e "[ Versão do Linux    ] - $kernel_version"
-    echo -e "[ Dono da máquina    ] - $owner"
-    echo -e "[ Última atualização ] - $last_update"
-    echo -e "[ Status da Máquina  ] - ${color}$system_update${cor_padrao}\n\n"
+    echo -e "${cor_amarela}[ ${cor_padrao}Distribuição Linux ${cor_amarela}]${cor_padrao} - $distro"
+    echo -e "${cor_amarela}[ ${cor_padrao}Versão do Linux    ${cor_amarela}]${cor_padrao} - $kernel_version"
+    echo -e "${cor_amarela}[ ${cor_padrao}Dono da máquina    ${cor_amarela}]${cor_padrao} - $owner"
+    echo -e "${cor_amarela}[ ${cor_padrao}Última atualização ${cor_amarela}]${cor_padrao} - $last_update"
+    echo -e "${cor_amarela}[ ${cor_padrao}Status da Máquina  ${cor_amarela}]${cor_padrao} - $system_update\n"
 
-    read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
-    echo ""
-    mostrarMenu
 }
 
 # ======================================================================================================================
 
-attSistema() 
+attSistema()
 {
     clear
-    
+
     cat << "EOF"
     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
 
@@ -82,7 +82,7 @@ attSistema()
     [ /menu ] Voltar Para o Menu Principal
 
     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
-    
+
 EOF
 
     read -p "Escolha uma opção: " resposta
@@ -176,7 +176,7 @@ atualizacaoGeral()
 # ======================================================================================================================
 
 # Função para configurar o serviço SSH
-sshMenu() 
+sshMenu()
 {
     clear
 
@@ -214,7 +214,7 @@ sshMenu()
             echo ""
             mostrarMenu
         fi
-        
+
     else
         echo -e "${cor_vemelha}Serviço SSH Não Instalado ou Não Configurado Corretamente...${cor_padrao}"
         echo " "
@@ -227,7 +227,7 @@ sshMenu()
 # ======================================================================================================================
 
 # Função para configurar o serviço de proxy
-proxyMenu() 
+proxyMenu()
 {
     clear
     echo -e "\nPreparando para configurar o Proxy...\n"
@@ -259,10 +259,10 @@ proxyMenu()
 # ======================================================================================================================
 
 # Função para exibir informações de rede
-redeMenu() 
+redeMenu()
 {
     echo "\nExibindo informações de rede...\n"
-    
+
     # Exibe informações de interface de rede
     sudo ip -c -br a
 
@@ -301,7 +301,7 @@ redeMenu()
 # ======================================================================================================================
 
 # Função para gerenciar arquivos
-fileMenu() 
+fileMenu()
 {
     clear
 
@@ -335,7 +335,7 @@ EOF
     esac
 }
 
-empacotar() 
+empacotar()
 {
     clear
     echo "### Empacotar Pasta de Arquivos ###"
@@ -369,7 +369,7 @@ empacotar()
     fi
 }
 
-desempacotar() 
+desempacotar()
 {
     clear
     echo "### Desempacotar Pasta de Arquivos ###"
@@ -411,7 +411,7 @@ backupScript()
     clear
 
     echo -e "\n[ Exemplo: /home/user ] Digite o caminho que você deseja criar um backup: "
-    read -r origem 
+    read -r origem
 
     echo -e "\n[ Exemplo: /var/backups ] Digite o caminho para o local onde você deseja guardar seu backup: "
     read -r destino
@@ -431,13 +431,13 @@ backupScript()
 
     if [ ! -d "$destino" ]; then
         echo "\nCriando o diretório de destino '$destino'..."
-        sudo mkdir -p "$destinoReformulado" 
+        sudo mkdir -p "$destinoReformulado"
     fi
 
     # ======================================================================
     # Verifica se os caminhos existem
 
-    echo -e "\nIniciando o backup..." 
+    echo -e "\nIniciando o backup..."
     echo "("$origem") para ("$destinoReformulado")"
     sudo rsync -a --delete "$origem/" "$destinoReformulado/"
 
@@ -466,7 +466,7 @@ sobreScript()
     echo -e "\nSobre o script...\n"
 }
 
-sair() 
+sair()
 {
     cat << "EOF"
 
@@ -500,12 +500,13 @@ EOF
 # ======================================================================================================================
 
 # MENU DO SCRIPT
-mostrarMenu() 
+mostrarMenu()
 {
 
     clear
 
-    cat << "EOF"
+    cat << "EOF" 
+${cor_vermelha}
 
     ▄█     █▄      ▄████████        ▄████████  ▄██   ▄       ▄████████       ███        ▄████████    ▄▄▄▄███▄▄▄▄
    ███     ███    ███    ███       ███    ███  ███   ██▄    ███    ███  ▀█████████▄    ███    ███  ▄██▀▀▀███▀▀▀██▄
@@ -518,19 +519,20 @@ mostrarMenu()
 
 ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
 
-      ---------------------- [ @Gabriel.Strider || Menu de Interações || WS.System V1.0 ] ----------------------
+      ---------------------- ${cor_amarela}[ ${cor_vermelha}@Gabriel.Strider ${cor_amarela}|| ${cor_vermelha}Menu de Interações ${cor_amarela}|| ${cor_vermelha}WS.System ${cor_padrao}V1.0 ${cor_amarela}] ${cor_vermelha}----------------------
 
-                                    [ /info  ]  [[ Informações do Sistema   ]]
-                                    [ /att   ]  [[ Atualizar Sistema        ]]
-                                    [ /ssh   ]  [[ Serviço de SSH           ]]
-                                    [ /proxy ]  [[ Serviço de Proxy         ]]
-                                    [ /rede  ]  [[ Informações de Rede      ]]
-                                    [ /file  ]  [[ Empacotar / Desempacotar ]]
-                                    [ /save  ]  [[ Criar um Backup          ]]
-                                    [ /sobre ]  [[ Sobre                    ]]
-                                    [ /exit  ]  [[ Sair                     ]]
+                                     ${cor_amarela}[  ${cor_vermelha}/info   ${cor_amarela}]   ${cor_amarela}[[  ${cor_padrao}Informações do Sistema    ${cor_amarela}]]
+                                     ${cor_amarela}[  ${cor_vermelha}/att    ${cor_amarela}]   ${cor_amarela}[[  ${cor_padrao}Atualizar Sistema         ${cor_amarela}]]
+                                     ${cor_amarela}[  ${cor_vermelha}/ssh    ${cor_amarela}]   ${cor_amarela}[[  ${cor_padrao}Serviço de SSH            ${cor_amarela}]]
+                                     ${cor_amarela}[  ${cor_vermelha}/proxy  ${cor_amarela}]   ${cor_amarela}[[  ${cor_padrao}Serviço de Proxy          ${cor_amarela}]]
+                                     ${cor_amarela}[  ${cor_vermelha}/rede   ${cor_amarela}]   ${cor_amarela}[[  ${cor_padrao}Informações de Rede       ${cor_amarela}]]
+                                     ${cor_amarela}[  ${cor_vermelha}/file   ${cor_amarela}]   ${cor_amarela}[[  ${cor_padrao}Empacotar / Desempacotar  ${cor_amarela}]]
+                                     ${cor_amarela}[  ${cor_vermelha}/save   ${cor_amarela}]   ${cor_amarela}[[  ${cor_padrao}Criar um Backup           ${cor_amarela}]]
+                                     ${cor_amarela}[  ${cor_vermelha}/sobre  ${cor_amarela}]   ${cor_amarela}[[  ${cor_padrao}Sobre                     ${cor_amarela}]]
+                                     ${cor_amarela}[  ${cor_vermelha}/exit   ${cor_amarela}]   ${cor_amarela}[[  ${cor_padrao}Sair                      ${cor_amarela}]]
 
-▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
+${cor_vermelha}▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄${cor_padrao}
+
 EOF
 }
 
