@@ -51,19 +51,19 @@ attSistema()
 {
     clear
 
-    echo -e "\nComo você gostaria de atualizar? ${cor_amarela}Apenas o essencial ${cor_padrao}/ ${cor_amarela}Uma atualização completa${cor_padrao}?\n"
-    echo -e "${cor_amarela}[ ${cor_padrao}/att  ${cor_amarela}]${cor_padrao} - Atualizar Apenas o Necessário"
-    echo -e "${cor_amarela}[ ${cor_padrao}/+att ${cor_amarela}]${cor_padrao} - Atualizar o Sistema Geral"
+    echo -e "\nComo você gostaria de atualizar? ${cor_amarela}Atualização Basica ${cor_padrao}/ ${cor_amarela}Atualização Completa${cor_padrao}?\n"
+    echo -e "${cor_amarela}[ ${cor_padrao}/att  ${cor_amarela}]${cor_padrao} - Atualização Basica"
+    echo -e "${cor_amarela}[ ${cor_padrao}/+att ${cor_amarela}]${cor_padrao} - Atualização Completa"
     echo -e "${cor_amarela}[ ${cor_padrao}/menu ${cor_amarela}]${cor_padrao} - Voltar Para o Menu Principal"
-    
-    echo -e "\n▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄\n"
+             
+    echo -e "\n▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄\n"
 
     read -p "Escolha uma opção: " resposta
 
     case "$resposta" in
         "att") atualizarBasico ;;
         "+att") atualizacaoGeral ;;
-        "/") mostrarMenu ;;
+        "menu") mostrarMenu ;;
         *) echo -e "Opção Inválida...";;
     esac
 }
@@ -71,7 +71,7 @@ attSistema()
 # Função para Atualizar o Sistema
 atualizarBasico()
 {
-    echo -e "\n\nAtualizando apenas o necessario para o sistema...\n\n"
+    echo -e "\n\nExecultando uma Atualização Rapida...\n\n"
 
     # Atualização básica
     sudo apt update
@@ -95,7 +95,7 @@ atualizarBasico()
 # Atualização Geral
 atualizacaoGeral()
 {
-    echo -e "\n\nAtualizando todos os pacorte do sistema...\n\n"
+    echo -e "\n\nExecultando uma Atualização Completa...\n\n"
 
     # Atualização completa
     sudo apt update
