@@ -34,12 +34,15 @@ infoSistema()
         system_update="${cor_verde}( Atualizado )${cor_padrao}"
     fi
 
+    echo -e "▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄\n"
+    
     echo -e "${cor_amarela}[ ${cor_padrao}Distribuição Linux ${cor_amarela}]${cor_padrao} - $distro"
     echo -e "${cor_amarela}[ ${cor_padrao}Versão do Linux    ${cor_amarela}]${cor_padrao} - $kernel_version"
     echo -e "${cor_amarela}[ ${cor_padrao}Dono da máquina    ${cor_amarela}]${cor_padrao} - $owner"
     echo -e "${cor_amarela}[ ${cor_padrao}Última atualização ${cor_amarela}]${cor_padrao} - $last_update"
-    echo -e "${cor_amarela}[ ${cor_padrao}Status da Máquina  ${cor_amarela}]${cor_padrao} - $system_update\n"
-
+    echo -e "${cor_amarela}[ ${cor_padrao}Status da Máquina  ${cor_amarela}]${cor_padrao} - $system_update"
+    
+    echo -e "\n▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄\n"
 }
 
 # ======================================================================================================================
@@ -48,10 +51,12 @@ attSistema()
 {
     clear
 
-    echo -e "\nVocê deseja atualizar apenas o necessário ou uma atualização geral?\n"
-    echo -e "${cor_amarela}[  ${cor_padrao}/att   ${cor_amarela}]${cor_padrao} - Atualizar Apenas o Necessário"
-    echo -e "${cor_amarela}[  ${cor_padrao}/+att  ${cor_amarela}]${cor_padrao} - Atualizar o Sistema Geral"
-    echo -e "${cor_amarela}[  ${cor_padrao}/menu  ${cor_amarela}]${cor_padrao} - Voltar Para o Menu Principal\n"
+    echo -e "\nComo você gostaria de atualizar? ${cor_amarela}Apenas o essencial ${cor_padrao}/ ${cor_amarela}Uma atualização completa${cor_padrao}?\n"
+    echo -e "${cor_amarela}[ ${cor_padrao}/att  ${cor_amarela}]${cor_padrao} - Atualizar Apenas o Necessário"
+    echo -e "${cor_amarela}[ ${cor_padrao}/+att ${cor_amarela}]${cor_padrao} - Atualizar o Sistema Geral"
+    echo -e "${cor_amarela}[ ${cor_padrao}/menu ${cor_amarela}]${cor_padrao} - Voltar Para o Menu Principal"
+    
+    echo -e "\n▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄\n"
 
     read -p "Escolha uma opção: " resposta
 
@@ -66,78 +71,54 @@ attSistema()
 # Função para Atualizar o Sistema
 atualizarBasico()
 {
-    echo ""
-    echo -e "\nAtualizando o sistema...\n"
+    echo -e "\n\nAtualizando apenas o necessario para o sistema...\n\n"
 
     # Atualização básica
     sudo apt update
     if [ $? -ne 0 ]; then
-        echo "\n${cor_vemelha}Erro: Falha ao atualizar lista de pacotes!${cor_padrao}\n"
-        read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
-        echo ""
-        mostrarMenu
-    fi
-
-    sudo apt upgrade -y
-    if [ $? -ne 0 ]; then
-        echo "\n${cor_vemelha}Erro: Falha ao atualizar pacotes!${cor_padrao}\n"
-        read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
-        echo ""
-        mostrarMenu
-    fi
-
-    sudo apt autoremove -y
-    if [ $? -ne 0 ]; then
-        echo "\n${cor_vemelha}Erro: Falha ao remover pacotes desnecessários!${cor_padrao}\n"
-        read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
-        echo ""
-        mostrarMenu
-    fi
-
-}
-
-# Atualização Geral
-atualizacaoGeral()
-{
-    echo -e "\nAtualizando o sistema...\n"
-
-    # Atualização completa
-    sudo apt update
-    if [ $? -ne 0 ]; then
-        echo +e "\n${cor_vemelha}Erro: Falha ao atualizar lista de pacotes!${cor_padrao}\n"
-        read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
-        echo ""
-        mostrarMenu
+        echo -e "\n${cor_vemelha}Erro: Falha ao atualizar lista de pacotes!${cor_padrao}\n"
     fi
 
     sudo apt upgrade -y
     if [ $? -ne 0 ]; then
         echo -e "\n${cor_vemelha}Erro: Falha ao atualizar pacotes!${cor_padrao}\n"
-        read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
-        echo ""
-        mostrarMenu
-    fi
-
-    sudo apt dist-upgrade -y
-    if [ $? -ne 0 ]; then
-        echo -e "\n${cor_vemelha}Erro: Falha ao atualizar pacotes com dependências!${cor_padrao}\n"
-        read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
-        echo ""
-        mostrarMenu
     fi
 
     sudo apt autoremove -y
     if [ $? -ne 0 ]; then
         echo -e "\n${cor_vemelha}Erro: Falha ao remover pacotes desnecessários!${cor_padrao}\n"
-        read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
-        echo ""
-        mostrarMenu
     fi
 
-    echo -e "\n${cor_verde}Atualização concluída!${cor_padrao}\n"
-    read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
-    echo ""
-    mostrarMenu
+    echo -e "\n\n${cor_verde}Atualização concluída!${cor_padrao}\n\n"
+}
+
+# Atualização Geral
+atualizacaoGeral()
+{
+    echo -e "\n\nAtualizando todos os pacorte do sistema...\n\n"
+
+    # Atualização completa
+    sudo apt update
+    if [ $? -ne 0 ]; then
+        echo -e "\n${cor_vemelha}Erro: Falha ao atualizar lista de pacotes!${cor_padrao}\n"
+    fi
+
+    sudo apt upgrade -y
+    if [ $? -ne 0 ]; then
+        echo -e "\n${cor_vemelha}Erro: Falha ao atualizar pacotes!${cor_padrao}\n"
+    fi
+
+    sudo apt dist-upgrade -y
+    if [ $? -ne 0 ]; then
+        echo -e "\n${cor_vemelha}Erro: Falha ao atualizar pacotes com dependências!${cor_padrao}\n"
+    fi
+
+    sudo apt autoremove -y
+    if [ $? -ne 0 ]; then
+        echo -e "\n${cor_vemelha}Erro: Falha ao remover pacotes desnecessários!${cor_padrao}\n"
+    fi
+
+    echo -e "\n\n${cor_verde}Atualização concluída!${cor_padrao}\n\n"
 }
 
 
@@ -476,15 +457,15 @@ mostrarMenu()
 
       ---------------------- [ @Gabriel.Strider || Menu de Interações || WS.System V1.0 ] ----------------------
 
-                                     [  /info   ]   [[  Informações do Sistema    ]]
-                                     [  /att    ]   [[  Atualizar Sistema         ]]
-                                     [  /ssh    ]   [[  Serviço de SSH            ]]
-                                     [  /proxy  ]   [[  Serviço de Proxy          ]]
-                                     [  /rede   ]   [[  Informações de Rede       ]]
-                                     [  /file   ]   [[  Empacotar / Desempacotar  ]]
-                                     [  /save   ]   [[  Criar um Backup           ]]
-                                     [  /sobre  ]   [[  Sobre                     ]]
-                                     [  /exit   ]   [[  Sair                      ]]
+                                    [ /info   ]   [[ Informações do Sistema   ]]
+                                    [ /att    ]   [[ Atualizar Sistema        ]]
+                                    [ /ssh    ]   [[ Serviço de SSH           ]]
+                                    [ /proxy  ]   [[ Serviço de Proxy         ]]
+                                    [ /rede   ]   [[ Informações de Rede      ]]
+                                    [ /file   ]   [[ Empacotar / Desempacotar ]]
+                                    [ /save   ]   [[ Criar um Backup          ]]
+                                    [ /sobre  ]   [[ Sobre                    ]]
+                                    [ /exit   ]   [[ Sair                     ]]
 
 ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
 
