@@ -127,10 +127,11 @@ atualizacaoGeral()
 # Função para verificar se o SSH está instalado
 verificarSSH() 
 {
-    # Esta instalado?
+    echo "\nVerificando...\n"
+    # Está instalado?
     if dpkg -l | grep -q "openssh-server"; then
     
-        # Esta em execução?
+        # Está em execução?
         if sudo systemctl is-active --quiet ssh; then
             echo -e "\n${cor_verde}O serviço SSH está instalado e em execução!${cor_padrao}\n"
             return 0
@@ -144,21 +145,36 @@ verificarSSH()
     fi
 }
 
-# Função para instalar o SSH
 instalarSSH() 
 {
-    echo -e "\nPreparando pacotes de instalação...\n"
-    sudo apt update -y
+    echo -e "\nVocê deseja instalar o SSH em sua máquina?"
+    echo -e "\n[ ${cor_amarela}Sim ${cor_padrao}ou ${cor_amarela}Não ${cor_padrao}]\n"
+    
+    read -p ":" resposta
+    resposta=$(echo "$resposta" | tr '[:upper:]' '[:lower:]')
 
-    echo -e "\n\nInstalando o serviço SSH...\n\n"
-    sudo apt install openssh-server -y
+    case $resposta in
+        "s" | "sim") 
+            echo -e "\nPreparando pacotes de instalação...\n"
+            sudo apt update -y
 
-    if [ $? -eq 0 ]; then
-        echo -e "\n${cor_verde}SSH instalado com sucesso!${cor_padrao}\n"
-    else
-        echo -e "\n${cor_vermelha}Erro ao instalar o SSH!${cor_padrao}\n"
-        return 1
-    fi
+            echo -e "\n\nInstalando o serviço SSH...\n\n"
+            sudo apt install openssh-server -y
+
+            if [ $? -eq 0 ]; then
+                echo -e "\n${cor_verde}SSH instalado com sucesso!${cor_padrao}\n"
+            else
+                echo -e "\n${cor_vermelha}Erro ao instalar o SSH!${cor_padrao}\n"
+                return 1
+            fi
+            ;;
+        "n" | "nao") 
+            voltarMenu 
+            ;;
+        *) 
+            echo -e "\nOpção Inválida...\n" 
+            ;;
+    esac
 }
 
 # Configurar a porta
@@ -171,14 +187,14 @@ configurarPortaSSH()
     echo -e "\n${cor_verde}Porta SSH configurada para $porta_ssh. Certifique-se de liberar a porta no firewall, se necessário!${cor_padrao}"
 }
 
-# Função para configurar a autenticação por senha
+# Função para autenticação por senha
 configurarSenhaSSH() 
 {
     echo -e "\nConfigurando autenticação por senha para o SSH...\n"
     read -s -p "Digite a nova senha para autenticação SSH: " senha_ssh
     echo -e "root:$senha_ssh" | sudo chpasswd
     sudo systemctl restart ssh
-    echo -e "\n${cor_verde}Autenticação por senha configurada para o SSH!${cor_padrao}\n"
+    echo -e "\n${cor_verde}\nAutenticação por senha configurada!${cor_padrao}\n"
 }
 
 # Função para configurar o SSH
@@ -383,7 +399,7 @@ sobreScript()
 sair()
 {
 
-    echo -e "\nVocê Deseja Realmente sair?"
+    echo -e "\nVocê deseja realmente sair?"
     echo -e "\n[ ${cor_amarela}Sim ${cor_padrao}ou ${cor_amarela}Não ${cor_padrao}]\n"
     
     read -p ":" resposta
