@@ -127,41 +127,41 @@ atualizacaoGeral()
 # Função para verificar se o SSH está instalado
 verificarSSH() 
 {
-    # Verifica se o serviço SSH está instalado
+    # Esta instalado?
     if dpkg -l | grep -q "openssh-server"; then
-        # Verifica se o serviço SSH está em execução
+    
+        # Esta em execução?
         if sudo systemctl is-active --quiet ssh; then
-            echo -e "\n${cor_verde}O serviço SSH está instalado e em execução.${cor_padrao}\n"
+            echo -e "\n${cor_verde}O serviço SSH está instalado e em execução!${cor_padrao}\n"
             return 0
         else
-            echo -e "\n${cor_amarela}O serviço SSH está instalado, mas não está em execução.${cor_padrao}\n"
+            echo -e "\n${cor_amarela}O serviço SSH está instalado, mas não está em execução!${cor_padrao}\n"
             return 1
         fi
     else
-        echo -e "\n${cor_vermelha}O serviço SSH não está instalado.${cor_padrao}\n"
+        echo -e "\n${cor_vermelha}O serviço SSH não está instalado!${cor_padrao}\n"
         return 1
     fi
 }
 
-instalarSSH() 
-{
+# Função para instalar o SSH
+instalarSSH() {
     echo -e "\nPreparando pacotes de instalação...\n"
     sudo apt update -y
 
-    echo -e "\n\nInstalando...\n\n"
+    echo -e "\n\nInstalando o serviço SSH...\n\n"
     sudo apt install openssh-server -y
 
     if [ $? -eq 0 ]; then
         echo -e "\n${cor_verde}SSH instalado com sucesso!${cor_padrao}\n"
     else
-        echo -e "\n${cor_vermelha}Erro ao instalar o SSH.${cor_padrao}\n"
-        return
+        echo -e "\n${cor_vermelha}Erro ao instalar o SSH!${cor_padrao}\n"
+        return 1
     fi
 }
 
 # Configurar a porta
-configurarPortaSSH() 
-{
+configurarPortaSSH() {
     echo -e "\nConfigurando a porta SSH...\n"
     read -p "Digite a porta desejada para SSH: " porta_ssh
     sudo sed -i "s/#Port 22/Port $porta_ssh/g" /etc/ssh/sshd_config
@@ -170,8 +170,7 @@ configurarPortaSSH()
 }
 
 # Função para configurar a autenticação por senha
-configurarSenhaSSH() 
-{
+configurarSenhaSSH() {
     echo -e "\nConfigurando autenticação por senha para o SSH...\n"
     read -s -p "Digite a nova senha para autenticação SSH: " senha_ssh
     echo -e "root:$senha_ssh" | sudo chpasswd
@@ -179,10 +178,19 @@ configurarSenhaSSH()
     echo -e "\n${cor_verde}Autenticação por senha configurada para o SSH!${cor_padrao}\n"
 }
 
+# Função para configurar o SSH
+configurarSSH() {
+    if ! verificarSSH; then
+        instalarSSH || return 1
+        configurarPortaSSH
+        configurarSenhaSSH
+    fi
+}
+
 # Função principal
-sshMenu() 
-{
-    configurarSSH
+sshMenu() {
+    clear
+    configurarSSH || return 1
 
     # Comando SSH para Windows
     echo -e "No Windows, você pode se conectar usando o seguinte comando no Prompt de Comando (CMD):"
