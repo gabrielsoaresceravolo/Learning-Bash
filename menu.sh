@@ -184,9 +184,14 @@ configurarSenhaSSH()
 # Função para configurar o SSH
 configurarSSH() 
 {
-    instalarSSH || return 1
-    configurarPortaSSH
-    configurarSenhaSSH
+    if verificarSSH; then
+        configurarPortaSSH
+        configurarSenhaSSH
+    else
+        instalarSSH || return 1
+        configurarPortaSSH
+        configurarSenhaSSH
+    fi
 }
 
 # Função principal
