@@ -125,62 +125,21 @@ atualizacaoGeral()
 # ======================================================================================================================
 
 # Função para verificar se o SSH está instalado
-configurarSSH() 
+verificarSSH() 
 {
-    clear
-
-    # Verifica qual o tipo de sistema
-    linux_system=$(lsb_release -si | tr '[:upper:]' '[:lower:]')
-
-    echo -e "\nConfigurando Serviço de SSH...\n"
-
-    # Se o Sistema for Ubuntu ou Debian
-    if [ "$linux_system" == "ubuntu" ] || [ "$linux_system" == "debian" ]; then
-        if dpkg -l | grep -q "openssh-server"; then
-            configurarPortaSSH
-            configurarSenhaSSH
+    # Verifica se o serviço SSH está instalado
+    if dpkg -l | grep -q "openssh-server"; then
+        # Verifica se o serviço SSH está em execução
+        if sudo systemctl is-active --quiet ssh; then
+            echo -e "\n${cor_verde}O serviço SSH está instalado e em execução.${cor_padrao}\n"
+            return 0
         else
-            instalarSSH
-            configurarPortaSSH
-            configurarSenhaSSH
+            echo -e "\n${cor_amarela}O serviço SSH está instalado, mas não está em execução.${cor_padrao}\n"
+            return 1
         fi
-
-    # Se o Sistema for CentOS
-    elif [ "$linux_system" == "centos" ]; then
-        if rpm -q openssh-server >/dev/null 2>&1; then
-            configurarPortaSSH
-            configurarSenhaSSH
-        else
-            instalarSSH
-            configurarPortaSSH
-            configurarSenhaSSH
-        fi
-
     else
-        echo -e "${cor_vermelha}Parece que você não possui um serviço SSH instalado...\n${cor_padrao}"
-        echo -e "Você gostaria de instalar um serviço SSH em sua máquina? ${cor_amarela}[ ${cor_padrao}Sim ${cor_amarela}ou ${cor_padrao}Não ${cor_amarela}]${cor_padrao}\n"
-                 
-        read -p ":" resposta
-        resposta=$(echo "$resposta" | tr '[:upper:]' '[:lower:]')
-
-        case $resposta in
-            "s" | "sim") 
-                instalarSSH
-                if [ $? -eq 0 ]; then
-                    configurarPortaSSH
-                    configurarSenhaSSH
-                else
-                    echo -e "\n${cor_vermelha}Falha ao instalar o SSH. Não é possível continuar.${cor_padrao}\n"
-                    return
-                fi
-                ;;
-            "n" | "nao")
-                voltarMenu 
-                ;;
-            *) 
-                 echo -e "\nOpção inválida...\n"
-                ;;
-        esac
+        echo -e "\n${cor_vermelha}O serviço SSH não está instalado.${cor_padrao}\n"
+        return 1
     fi
 }
 
@@ -215,10 +174,9 @@ configurarSenhaSSH()
 {
     echo -e "\nConfigurando autenticação por senha para o SSH...\n"
     read -s -p "Digite a nova senha para autenticação SSH: " senha_ssh
-    echo -e "\n"
     echo -e "root:$senha_ssh" | sudo chpasswd
     sudo systemctl restart ssh
-    echo -e "\n${cor_verde}Autenticação por senha configurada para o SSH.${cor_padrao}\n"
+    echo -e "\n${cor_verde}Autenticação por senha configurada para o SSH!${cor_padrao}\n"
 }
 
 # Função principal
@@ -234,7 +192,6 @@ sshMenu()
     echo -e "No Linux, você pode se conectar usando o seguinte comando no terminal:"
     echo -e "${cor_amarela}ssh <nome_do_usuario>@<endereço_IP> -p <porta_ssh>${cor_padrao}\n"
 }
-
 
 # ======================================================================================================================
 
