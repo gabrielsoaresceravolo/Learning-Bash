@@ -236,34 +236,33 @@ proxyMenu()
     
     echo -e "\nPreparando...\n"
     echo -e "Caso queira voltar, digite ${cor_amarela}/menu${cor_padrao}: "
-    echo "Digite o endereço do proxy: "
-
-    read -r resposta
+    read -p "Digite o endereço do proxy: " proxy_address
     
-    case $resposta in
-        "/menu") 
-            voltarMenu 
-            ;;
-        *)
-            proxy_address="$resposta"
-            echo "Digite a porta do proxy: "
-            read -r proxy_port
-        
-            # Configurar o proxy
-            export http_proxy="$proxy_address:$proxy_port"
-            export https_proxy="$proxy_address:$proxy_port"
-            export ftp_proxy="$proxy_address:$proxy_port"
-        
-            # Verifica se houve algum erro!
-            if [ $? -eq 0 ]; then
-                echo -e "\n${cor_verde}Proxy configurado com sucesso!${cor_padrao}\n"
-            else
-                echo -e "\n${cor_vermelha}Erro ao configurar o proxy!${cor_padrao}\n"
-            fi
-            ;;
-    esac
-}
+    if [ -z "$proxy_address" ]; then
+        echo -e "\n${cor_vermelha}Erro: Endereço do proxy não pode estar vazio!${cor_padrao}\n"
+        return 1
+    fi
 
+    echo "Digite a porta do proxy: "
+    read -r proxy_port
+
+    if [ -z "$proxy_port" ]; then
+        echo -e "\n${cor_vermelha}Erro: Porta do proxy não pode estar vazia!${cor_padrao}\n"
+        return 1
+    fi
+
+    # Configurar o proxy
+    export http_proxy="$proxy_address:$proxy_port"
+    export https_proxy="$proxy_address:$proxy_port"
+    export ftp_proxy="$proxy_address:$proxy_port"
+
+    # Verifica se houve algum erro!
+    if [ $? -eq 0 ]; then
+        echo -e "\n${cor_verde}Proxy configurado com sucesso!${cor_padrao}\n"
+    else
+        echo -e "\n${cor_vermelha}Erro ao configurar o proxy!${cor_padrao}\n"
+    fi
+}
 
 # ======================================================================================================================
 
