@@ -200,7 +200,7 @@ instalarSSH()
     fi
 }
 
-# Função para configurar a porta SSH
+# Configurar a porta
 configurarPortaSSH() 
 {
     echo -e "\nConfigurando a porta SSH...\n"
@@ -210,16 +210,19 @@ configurarPortaSSH()
     echo -e "\n${cor_verde}Porta SSH configurada para $porta_ssh. Certifique-se de liberar a porta no firewall, se necessário.${cor_padrao}\n"
 }
 
-# Função para configurar a autenticação por senha no SSH
+# Função para configurar a autenticação por senha
 configurarSenhaSSH() 
 {
     echo -e "\nConfigurando autenticação por senha para o SSH...\n"
+    read -s -p "Digite a nova senha para autenticação SSH: " senha_ssh
+    echo -e "\n"
     sudo sed -i "s/#PasswordAuthentication yes/PasswordAuthentication yes/g" /etc/ssh/sshd_config
+    echo -e "Senha configurada: $senha_ssh" | sudo chpasswd
     sudo systemctl restart ssh
     echo -e "\n${cor_verde}Autenticação por senha configurada para o SSH.${cor_padrao}\n"
 }
 
-# Função principal que chama a configuração do SSH
+# Função principal
 sshMenu() 
 {
     configurarSSH
