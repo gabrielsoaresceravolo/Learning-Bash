@@ -51,19 +51,19 @@ attSistema()
 {
     clear
 
-    echo -e "\nComo você gostaria de atualizar? ${cor_amarela}Atualização Basica ${cor_padrao}/ ${cor_amarela}Atualização Completa${cor_padrao}?\n"
+    echo -e "\nComo você gostaria de atualizar? ${cor_amarela}Atualização Basica ${cor_padrao}/ ${cor_amarela}Atualização Completa${cor_padrao} ?\n"
     echo -e "${cor_amarela}[ ${cor_padrao}/att  ${cor_amarela}]${cor_padrao} - Atualização Basica"
     echo -e "${cor_amarela}[ ${cor_padrao}/+att ${cor_amarela}]${cor_padrao} - Atualização Completa"
     echo -e "${cor_amarela}[ ${cor_padrao}/menu ${cor_amarela}]${cor_padrao} - Voltar Para o Menu Principal"
              
-    echo -e "\n▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄\n"
+    echo -e "\n▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄\n"
 
     read -p "Escolha uma opção: " resposta
 
     case "$resposta" in
         "att") atualizarBasico ;;
         "+att") atualizacaoGeral ;;
-        "menu") mostrarMenu ;;
+        "menu") voltarMenu ;;
         *) echo -e "Opção Inválida...";;
     esac
 }
@@ -139,14 +139,8 @@ sshMenu()
         sudo systemctl start ssh
         if [ $? -eq 0 ]; then
             sudo systemctl status ssh
-            read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
-            echo ""
-            mostrarMenu
         else
             echo -e "\n${cor_vemelha}Erro: Falha ao iniciar o serviço SSH!${cor_padrao}\n"
-            read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
-            echo ""
-            mostrarMenu
         fi
 
     # Se o Sistema for CentOS
@@ -154,22 +148,12 @@ sshMenu()
         sudo service ssh start
         if [ $? -eq 0 ]; then
             sudo service ssh status
-            read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
-            echo ""
-            mostrarMenu
         else
             echo -e "\n${cor_vemelha}Erro: Falha ao iniciar o serviço SSH!${cor_padrao}\n"
-            read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
-            echo ""
-            mostrarMenu
         fi
 
     else
         echo -e "${cor_vemelha}Serviço SSH Não Instalado ou Não Configurado Corretamente...${cor_padrao}"
-        echo " "
-        read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
-        echo ""
-        mostrarMenu
     fi
 }
 
@@ -193,14 +177,8 @@ proxyMenu()
     # Verifica se houve algum erro!
     if [ $? -eq 0 ]; then
         echo -e "\n${cor_verde}Proxy configurado com sucesso!${cor_padrao}\n"
-        read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
-        echo ""
-        mostrarMenu
     else
         echo -e "\n${cor_vemelha}Erro ao configurar o proxy!${cor_padrao}\n"
-        read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
-        echo ""
-        mostrarMenu
     fi
 }
 
@@ -215,35 +193,9 @@ redeMenu()
     # Exibe informações de interface de rede
     sudo ip -c -br a
 
-    # Verifica se houve algum erro
-    if [ $? -eq 0 ]; then
-        echo ""
-        read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
-        echo ""
-        mostrarMenu
-    else
-        echo -e "\n${cor_vemelha}Erro ao exibir informações de rede!${cor_padrao}\n"
-        read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
-        echo ""
-        mostrarMenu
-    fi
-
     # Exibe informações da tabela ARP
     echo -e "\nExibindo a tabela ARP...\n"
     arp -a
-
-    # Verifica se houve algum erro durante a execução do comando arp
-    if [ $? -eq 0 ]; then
-        echo ""
-        read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
-        echo ""
-        mostrarMenu
-    else
-        echo -e "\n${cor_vemelha}Erro ao exibir tabela ARP.${cor_padrao}\n"
-        read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
-        echo ""
-        mostrarMenu
-    fi
 }
 
 
@@ -269,7 +221,7 @@ fileMenu()
             desempacotar
             ;;
         "/menu")
-            mostrarMenu
+            voltarMenu
             ;;
         *)
             echo "Opção inválida."
@@ -284,30 +236,18 @@ empacotar()
     read -p "Digite o caminho completo da pasta que deseja empacotar: " caminho_origem
     if [ ! -d "$caminho_origem" ]; then
         echo -e "${cor_vemelha}Erro: O caminho especificado não corresponde a uma pasta válida!${cor_padrao}"
-        read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
-        echo ""
-        mostrarMenu
     fi
 
     read -p "Digite o nome do arquivo de destino para o pacote (com extensão .tar ou .tar.gz): " nome_arquivo
     if [[ ! "$nome_arquivo" =~ \.tar(\.gz)?$ ]]; then
         echo -e "${cor_vemelha}Erro: O nome do arquivo de destino deve ter a extensão .tar ou .tar.gz!${cor_padrao}"
-        read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
-        echo ""
-        mostrarMenu
     fi
 
     tar -czf "$nome_arquivo" -C "$(dirname "$caminho_origem")" "$(basename "$caminho_origem")"
     if [ $? -eq 0 ]; then
         echo -e "\n${cor_verde}Pasta empacotada com sucesso em $nome_arquivo!${cor_padrao}\n"
-        read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
-        echo ""
-        mostrarMenu
     else
         echo -e "\n${cor_vemelha}Erro ao empacotar a pasta!${cor_padrao}\n"
-        read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
-        echo ""
-        mostrarMenu
     fi
 }
 
@@ -319,30 +259,18 @@ desempacotar()
     read -p "Digite o caminho completo do arquivo compactado que deseja desempacotar: " caminho_origem
     if [ ! -f "$caminho_origem" ]; then
         echo -e "\n${cor_vemelha}Erro: O arquivo compactado não existe!${cor_padrao}\n"
-        read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
-        echo ""
-        mostrarMenu
     fi
 
     read -p "Digite o caminho completo do destino para desempacotar o arquivo: " caminho_destino
     if [ ! -d "$caminho_destino" ]; then
         echo -e "\n${cor_vemelha}Erro: O caminho de destino não corresponde a uma pasta válida!${cor_padrao}\n"
-        read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
-        echo ""
-        mostrarMenu
     fi
 
     tar -xzf "$caminho_origem" -C "$caminho_destino"
     if [ $? -eq 0 ]; then
         echo -e "\n${cor_verde}Arquivo desempacotado com sucesso em $caminho_destino!${cor_padrao}\n"
-        read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
-        echo ""
-        mostrarMenu
     else
         echo -e "\n${cor_vemelha}Erro ao desempacotar o arquivo!${cor_padrao}\n"
-        read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
-        echo ""
-        mostrarMenu
     fi
 }
 
@@ -367,9 +295,6 @@ backupScript()
 
     if [ ! -d "$origem" ]; then
         echo -e "\n${cor_vermelha}Erro: O diretório de origem '$origem' não existe!${cor_padrao}"
-        read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
-        echo ""
-        mostrarMenu
     fi
 
     if [ ! -d "$destino" ]; then
@@ -389,14 +314,8 @@ backupScript()
 
     if [ $? -eq 0 ]; then
         echo -e "\n${cor_verde}Backup Finalizado com sucesso!${cor_padrao}\n"
-        read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
-        echo ""
-        mostrarMenu
     else
         echo -e "\n${cor_vermelha}Erro ao gerar o backup!${cor_padrao}\n"
-        read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
-        echo ""
-        mostrarMenu
     fi
 
 }
@@ -424,7 +343,7 @@ sair()
             exit 0
             ;;
         "n") 
-            mostrarMenu 
+            voltarMenu 
             ;;
         *) 
             echo "Opção Inválida..." 
@@ -432,6 +351,9 @@ sair()
     esac
 }
 
+voltarMenu
+{
+}
 
 # ======================================================================================================================
 
@@ -473,6 +395,7 @@ EOF
 }
 
 while true; do
+
     mostrarMenu
 
     read -p "Escolha uma opção: /" menu
