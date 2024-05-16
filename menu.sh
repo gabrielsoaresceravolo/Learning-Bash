@@ -125,29 +125,35 @@ atualizacaoGeral()
 # ======================================================================================================================
 
 # Função para verificar se o SSH está instalado
-verificarSSH() 
+configurarSSH() 
 {
     clear
 
     # Verifica qual o tipo de sistema
     linux_system=$(lsb_release -si | tr '[:upper:]' '[:lower:]')
 
-    echo -e "\nVerificando Serviço de SSH...\n"
+    echo -e "\nConfigurando Serviço de SSH...\n"
 
     # Se o Sistema for Ubuntu ou Debian
     if [ "$linux_system" == "ubuntu" ] || [ "$linux_system" == "debian" ]; then
         if dpkg -l | grep -q "openssh-server"; then
             configurarPortaSSH
+            configurarSenhaSSH
         else
             instalarSSH
+            configurarPortaSSH
+            configurarSenhaSSH
         fi
 
     # Se o Sistema for CentOS
     elif [ "$linux_system" == "centos" ]; then
         if rpm -q openssh-server >/dev/null 2>&1; then
             configurarPortaSSH
+            configurarSenhaSSH
         else
             instalarSSH
+            configurarPortaSSH
+            configurarSenhaSSH
         fi
 
     else
@@ -160,6 +166,13 @@ verificarSSH()
         case $resposta in
             "s" | "sim") 
                 instalarSSH
+                if [ $? -eq 0 ]; then
+                    configurarPortaSSH
+                    configurarSenhaSSH
+                else
+                    echo -e "\n${cor_vermelha}Falha ao instalar o SSH. Não é possível continuar.${cor_padrao}\n"
+                    return
+                fi
                 ;;
             "n" | "nao")
                 voltarMenu 
@@ -171,19 +184,6 @@ verificarSSH()
     fi
 }
 
-# Função para configurar a porta SSH
-configurarPortaSSH() 
-{
-    echo -e "\n\nConfigurando a porta SSH...\n\n"
-    
-    read -p "Digite a porta desejada para SSH: " porta_ssh
-    
-    sudo sed -i "s/#Port 22/Port $porta_ssh/g" /etc/ssh/sshd_config
-    sudo systemctl restart ssh
-    echo -e "\n\n${cor_verde}Porta SSH configurada para $porta_ssh. Certifique-se de liberar a porta no firewall, se necessário!${cor_padrao}\n\n"
-}
-
-# Função para instalar o SSH
 instalarSSH() 
 {
     echo -e "\nPreparando pacotes de instalação...\n"
@@ -192,13 +192,45 @@ instalarSSH()
     echo -e "\n\nInstalando...\n\n"
     sudo apt install openssh-server -y
 
-    configurarPortaSSH
+    if [ $? -eq 0 ]; then
+        echo -e "\n${cor_verde}SSH instalado com sucesso!${cor_padrao}\n"
+    else
+        echo -e "\n${cor_vermelha}Erro ao instalar o SSH.${cor_padrao}\n"
+        return
+    fi
 }
 
-# Função principal que chama a verificação do SSH
+# Função para configurar a porta SSH
+configurarPortaSSH() 
+{
+    echo -e "\nConfigurando a porta SSH...\n"
+    read -p "Digite a porta desejada para SSH: " porta_ssh
+    sudo sed -i "s/#Port 22/Port $porta_ssh/g" /etc/ssh/sshd_config
+    sudo systemctl restart ssh
+    echo -e "\n${cor_verde}Porta SSH configurada para $porta_ssh. Certifique-se de liberar a porta no firewall, se necessário.${cor_padrao}\n"
+}
+
+# Função para configurar a autenticação por senha no SSH
+configurarSenhaSSH() 
+{
+    echo -e "\nConfigurando autenticação por senha para o SSH...\n"
+    sudo sed -i "s/#PasswordAuthentication yes/PasswordAuthentication yes/g" /etc/ssh/sshd_config
+    sudo systemctl restart ssh
+    echo -e "\n${cor_verde}Autenticação por senha configurada para o SSH.${cor_padrao}\n"
+}
+
+# Função principal que chama a configuração do SSH
 sshMenu() 
 {
-    verificarSSH
+    configurarSSH
+
+    # Comando SSH para Windows
+    echo -e "No Windows, você pode se conectar usando o seguinte comando no Prompt de Comando (CMD):"
+    echo -e "${cor_amarela}ssh <nome_do_usuario>@<endereço_IP> -p <porta_ssh>${cor_padrao}\n"
+
+    # Comando SSH para Linux
+    echo -e "No Linux, você pode se conectar usando o seguinte comando no terminal:"
+    echo -e "${cor_amarela}ssh <nome_do_usuario>@<endereço_IP> -p <porta_ssh>${cor_padrao}\n"
 }
 
 
