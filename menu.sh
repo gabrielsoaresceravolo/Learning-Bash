@@ -124,8 +124,8 @@ atualizacaoGeral()
 
 # ======================================================================================================================
 
-# Função para configurar o serviço SSH
-sshMenu()
+# Função para verificar se o SSH está instalado
+verificarSSH() 
 {
     clear
 
@@ -136,53 +136,69 @@ sshMenu()
 
     # Se o Sistema for Ubuntu ou Debian
     if [ "$linux_system" == "ubuntu" ] || [ "$linux_system" == "debian" ]; then
-        sudo systemctl start ssh
-        if [ $? -eq 0 ]; then
-            sudo systemctl status ssh
+        if dpkg -l | grep -q "openssh-server"; then
+            configurarPortaSSH
         else
-            echo -e "\n${cor_vermelha}Erro: Falha ao iniciar o serviço SSH!${cor_padrao}\n"
+            instalarSSH
         fi
 
     # Se o Sistema for CentOS
     elif [ "$linux_system" == "centos" ]; then
-        sudo service ssh start
-        if [ $? -eq 0 ]; then
-            sudo service ssh status
+        if rpm -q openssh-server >/dev/null 2>&1; then
+            configurarPortaSSH
         else
-            echo -e "\n${cor_vermelha}Erro: Falha ao iniciar o serviço SSH!${cor_padrao}\n"
+            instalarSSH
         fi
 
     else
         echo -e "${cor_vermelha}Parece que você não possui um serviço SSH instalado...\n${cor_padrao}"
-
-        echo -e "Você gostaria de instalar um serviço SSH em sua maquina? ${cor_amarela}[ ${cor_padrao}Sim ${cor_amarela}ou ${cor_padrao}Não ${cor_amarela}]${cor_padrao}\n"
+        echo -e "Você gostaria de instalar um serviço SSH em sua máquina? ${cor_amarela}[ ${cor_padrao}Sim ${cor_amarela}ou ${cor_padrao}Não ${cor_amarela}]${cor_padrao}\n"
                  
         read -p ":" resposta
         resposta=$(echo "$resposta" | tr '[:upper:]' '[:lower:]')
 
         case $resposta in
             "s" | "sim") 
-                echo -e "\nPreparando pacotes de instalação...\n"
-                sudo apt update -y
-                echo -e "\n\nInstalando...\n\n"
-                sudo apt install openssh-server -y
-                echo -e "\n\nIniciando...\n\n"
-                sudo systemctl start ssh -y
-                sudo systemctl enable ssh -y
-                sudo systemctl status ssh 
-
-                echo -e "\n\Iniciando...\n\n"
-                
+                instalarSSH
                 ;;
             "n" | "nao")
                 voltarMenu 
                 ;;
             *) 
-                echo -e "\n${cor_verde}SSH instalado e pronto para uso!...${cor_padrao}\n" 
+                 echo -e "\nOpção inválida...\n"
                 ;;
         esac
-        
     fi
+}
+
+# Função para configurar a porta SSH
+configurarPortaSSH() 
+{
+    echo -e "\n\nConfigurando a porta SSH...\n\n"
+    
+    read -p "Digite a porta desejada para SSH: " porta_ssh
+    
+    sudo sed -i "s/#Port 22/Port $porta_ssh/g" /etc/ssh/sshd_config
+    sudo systemctl restart ssh
+    echo -e "\n\n${cor_verde}Porta SSH configurada para $porta_ssh. Certifique-se de liberar a porta no firewall, se necessário!${cor_padrao}\n\n"
+}
+
+# Função para instalar o SSH
+instalarSSH() 
+{
+    echo -e "\nPreparando pacotes de instalação...\n"
+    sudo apt update -y
+
+    echo -e "\n\nInstalando...\n\n"
+    sudo apt install openssh-server -y
+
+    configurarPortaSSH
+}
+
+# Função principal que chama a verificação do SSH
+sshMenu() 
+{
+    verificarSSH
 }
 
 
