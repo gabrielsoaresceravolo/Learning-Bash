@@ -64,7 +64,7 @@ attSistema()
         "att") atualizarBasico ;;
         "+att") atualizacaoGeral ;;
         "menu") voltarMenu ;;
-        *) echo -e "Opção Inválida...";;
+        *) echo -e "\nOpção Inválida...\n";;
     esac
 }
 
@@ -164,16 +164,21 @@ sshMenu()
             "s" | "sim") 
                 echo -e "\nPreparando pacotes de instalação...\n"
                 sudo apt update -y
+                echo -e "\n\nInstalando...\n\n"
                 sudo apt install openssh-server -y
+                echo -e "\n\nIniciando...\n\n"
                 sudo systemctl start ssh -y
                 sudo systemctl enable ssh -y
                 sudo systemctl status ssh 
+
+                echo -e "\n\Iniciando...\n\n"
+                
                 ;;
             "n" | "nao")
                 voltarMenu 
                 ;;
             *) 
-                echo "Opção Inválida..." 
+                echo -e "\n${cor_verde}SSH instalado e pronto para uso!...${cor_padrao}\n" 
                 ;;
         esac
         
@@ -248,7 +253,7 @@ fileMenu()
             voltarMenu
             ;;
         *)
-            echo "Opção inválida."
+            echo -e "\nOpção inválida...\n"
             ;;
     esac
 }
@@ -363,14 +368,14 @@ sair()
 
     case $resposta in
         "s" | "sim") 
-            echo "\nSaindo da aplicação...\n"
+            echo -e "\nSaindo da aplicação...\n"
             exit 0
             ;;
         "n" | "nao") 
             voltarMenu 
             ;;
         *) 
-            echo "\nOpção Inválida...\n" 
+            echo -e "\nOpção Inválida...\n" 
             ;;
     esac
 
@@ -437,7 +442,7 @@ while true; do
         "save") backupScript ;;
         "sobre") sobreScript ;;
         "sair") sair ;;
-        *) echo "Opção Inválida..." ;;
+        *) echo -e "\nOpção Inválida...\n" ;;
     esac
 
 read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
