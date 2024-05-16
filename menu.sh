@@ -145,7 +145,8 @@ verificarSSH()
 }
 
 # Função para instalar o SSH
-instalarSSH() {
+instalarSSH() 
+{
     echo -e "\nPreparando pacotes de instalação...\n"
     sudo apt update -y
 
@@ -161,7 +162,8 @@ instalarSSH() {
 }
 
 # Configurar a porta
-configurarPortaSSH() {
+configurarPortaSSH() 
+{
     echo -e "\nConfigurando a porta SSH...\n"
     read -p "Digite a porta desejada para SSH: " porta_ssh
     sudo sed -i "s/#Port 22/Port $porta_ssh/g" /etc/ssh/sshd_config
@@ -170,7 +172,8 @@ configurarPortaSSH() {
 }
 
 # Função para configurar a autenticação por senha
-configurarSenhaSSH() {
+configurarSenhaSSH() 
+{
     echo -e "\nConfigurando autenticação por senha para o SSH...\n"
     read -s -p "Digite a nova senha para autenticação SSH: " senha_ssh
     echo -e "root:$senha_ssh" | sudo chpasswd
@@ -179,16 +182,16 @@ configurarSenhaSSH() {
 }
 
 # Função para configurar o SSH
-configurarSSH() {
-    if ! verificarSSH; then
-        instalarSSH || return 1
-        configurarPortaSSH
-        configurarSenhaSSH
-    fi
+configurarSSH() 
+{
+    instalarSSH || return 1
+    configurarPortaSSH
+    configurarSenhaSSH
 }
 
 # Função principal
-sshMenu() {
+sshMenu() 
+{
     clear
     configurarSSH || return 1
 
