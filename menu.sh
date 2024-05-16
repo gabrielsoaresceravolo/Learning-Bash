@@ -155,20 +155,19 @@ sshMenu()
     else
         echo -e "${cor_vermelha}Parece que você não possui um serviço SSH instalado...\n${cor_padrao}"
 
-        echo -e "\nVocê gostaria de instalar um serviço SSH em sua máquina?\n"
-        echo -e "${cor_amarela}[ ${cor_padrao}Sim ${cor_amarela}ou ${cor_padrao}Não ${cor_amarela}]${cor_padrao}\n"
+        echo -e "Você gostaria de instalar um serviço SSH em sua maquina? ${cor_amarela}[ ${cor_padrao}Sim ${cor_amarela}ou ${cor_padrao}Não ${cor_amarela}]${cor_padrao}\n"
                  
-        read -p " " resposta
+        read -p ":" resposta
         resposta=$(echo "$resposta" | tr '[:upper:]' '[:lower:]')
 
         case $resposta in
             "s" | "sim") 
-                echo "\nPreparando pacotes de instalação...\n"
-                sudo apt update
-                sudo apt install openssh-server
-                sudo systemctl start ssh
-                sudo systemctl enable ssh
-                sudo systemctl status ssh
+                echo -e "\nPreparando pacotes de instalação...\n"
+                sudo apt update -y
+                sudo apt install openssh-server -y
+                sudo systemctl start ssh -y
+                sudo systemctl enable ssh -y
+                sudo systemctl status ssh 
                 ;;
             "n" | "nao")
                 voltarMenu 
@@ -357,21 +356,21 @@ sair()
 {
 
     echo -e "\nVocê Deseja Realmente sair?"
-    echo -e "${cor_amarela}[ ${cor_padrao}Sim ${cor_amarela}ou ${cor_padrao}Não ${cor_amarela}]${cor_padrao}\n"
+    echo -e "\n[ ${cor_amarela}Sim ${cor_padrao}ou ${cor_amarela}Não ${cor_padrao}]\n"
     
-    read -p " " resposta
+    read -p ":" resposta
     resposta=$(echo "$resposta" | tr '[:upper:]' '[:lower:]')
 
     case $resposta in
         "s" | "sim") 
-            echo "Saindo da aplicação..."
+            echo "\nSaindo da aplicação...\n"
             exit 0
             ;;
         "n" | "nao") 
             voltarMenu 
             ;;
         *) 
-            echo "Opção Inválida..." 
+            echo "\nOpção Inválida...\n" 
             ;;
     esac
 
