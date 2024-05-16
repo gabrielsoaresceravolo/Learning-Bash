@@ -204,9 +204,12 @@ configurarSSH()
         configurarPortaSSH
         configurarSenhaSSH
     else
-        instalarSSH || return 1
-        configurarPortaSSH
-        configurarSenhaSSH
+        if instalarSSH; then
+            configurarPortaSSH
+            configurarSenhaSSH
+        else
+            return 1
+        fi
     fi
 }
 
