@@ -127,7 +127,6 @@ atualizacaoGeral()
 # Função para verificar se o SSH está instalado
 verificarSSH() 
 {
-    echo -e "\nVerificando...\n"
     # Está instalado?
     if dpkg -l | grep -q "openssh-server"; then
     
