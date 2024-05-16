@@ -351,10 +351,6 @@ sair()
     esac
 }
 
-voltarMenu
-{
-}
-
 # ======================================================================================================================
 
 # MENU DO SCRIPT
@@ -416,3 +412,8 @@ while true; do
 
 read -n 1 -s -r -p "Pressione qualquer tecla para continuar..."
 done
+
+voltarMenu
+{
+    clear
+}
