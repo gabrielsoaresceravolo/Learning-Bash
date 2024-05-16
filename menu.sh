@@ -233,23 +233,35 @@ sshMenu()
 proxyMenu()
 {
     clear
-    echo -e "\nPreparando para configurar o Proxy...\n"
+    
+    echo -e "\nPreparando...\n"
+    echo -e "Caso queira voltar, digite ${cor_amarela}/menu${cor_padrao}: "
     echo "Digite o endereço do proxy: "
-    read -r proxy_address
-    echo "Digite a porta do proxy: "
-    read -r proxy_port
 
-    # Configurar o proxy
-    export http_proxy="$proxy_address:$proxy_port"
-    export https_proxy="$proxy_address:$proxy_port"
-    export ftp_proxy="$proxy_address:$proxy_port"
-
-    # Verifica se houve algum erro!
-    if [ $? -eq 0 ]; then
-        echo -e "\n${cor_verde}Proxy configurado com sucesso!${cor_padrao}\n"
-    else
-        echo -e "\n${cor_vemelha}Erro ao configurar o proxy!${cor_padrao}\n"
-    fi
+    read -r resposta
+    
+    case $resposta in
+        "/menu") 
+            voltarMenu 
+            ;;
+        *)
+            proxy_address="$resposta"
+            echo "Digite a porta do proxy: "
+            read -r proxy_port
+        
+            # Configurar o proxy
+            export http_proxy="$proxy_address:$proxy_port"
+            export https_proxy="$proxy_address:$proxy_port"
+            export ftp_proxy="$proxy_address:$proxy_port"
+        
+            # Verifica se houve algum erro!
+            if [ $? -eq 0 ]; then
+                echo -e "\n${cor_verde}Proxy configurado com sucesso!${cor_padrao}\n"
+            else
+                echo -e "\n${cor_vermelha}Erro ao configurar o proxy!${cor_padrao}\n"
+            fi
+            ;;
+    esac
 }
 
 
