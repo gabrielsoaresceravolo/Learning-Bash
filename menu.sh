@@ -127,20 +127,20 @@ atualizacaoGeral()
 # Função para verificar se o SSH está instalado
 verificarSSH() 
 {
-    echo "\nVerificando...\n"
+    echo -e "\nVerificando...\n"
     # Está instalado?
     if dpkg -l | grep -q "openssh-server"; then
     
         # Está em execução?
         if sudo systemctl is-active --quiet ssh; then
-            echo -e "\n${cor_verde}O serviço SSH está instalado e em execução!${cor_padrao}\n"
+            echo -e "${cor_verde}O serviço SSH está instalado e em execução!${cor_padrao}\n"
             return 0
         else
-            echo -e "\n${cor_amarela}O serviço SSH está instalado, mas não está em execução!${cor_padrao}\n"
+            echo -e "${cor_amarela}O serviço SSH está instalado, mas não está em execução!${cor_padrao}\n"
             return 1
         fi
     else
-        echo -e "\n${cor_vermelha}O serviço SSH não está instalado!${cor_padrao}\n"
+        echo -e "${cor_vermelha}O serviço SSH não está instalado!${cor_padrao}\n"
         return 1
     fi
 }
