@@ -132,7 +132,7 @@ sshMenu()
     # Verifica qual o tipo de sistema
     linux_system=$(lsb_release -si | tr '[:upper:]' '[:lower:]')
 
-    echo -e "\nIniciando o Serviço do SSH...\n"
+    echo -e "\nVerificando Serviço de SSH...\n"
 
     # Se o Sistema for Ubuntu ou Debian
     if [ "$linux_system" == "ubuntu" ] || [ "$linux_system" == "debian" ]; then
@@ -140,7 +140,7 @@ sshMenu()
         if [ $? -eq 0 ]; then
             sudo systemctl status ssh
         else
-            echo -e "\n${cor_vemelha}Erro: Falha ao iniciar o serviço SSH!${cor_padrao}\n"
+            echo -e "\n${cor_vermelha}Erro: Falha ao iniciar o serviço SSH!${cor_padrao}\n"
         fi
 
     # Se o Sistema for CentOS
@@ -149,13 +149,38 @@ sshMenu()
         if [ $? -eq 0 ]; then
             sudo service ssh status
         else
-            echo -e "\n${cor_vemelha}Erro: Falha ao iniciar o serviço SSH!${cor_padrao}\n"
+            echo -e "\n${cor_vermelha}Erro: Falha ao iniciar o serviço SSH!${cor_padrao}\n"
         fi
 
     else
-        echo -e "${cor_vemelha}Serviço SSH Não Instalado ou Não Configurado Corretamente...${cor_padrao}"
+        echo -e "${cor_vermelha}Parece que você não possui um serviço SSH instalado...\n${cor_padrao}"
+
+        echo -e "\nVocê gostaria de instalar um serviço SSH em sua máquina?\n"
+        echo -e "${cor_amarela}[ ${cor_padrao}Sim ${cor_amarela}ou ${cor_padrao}Não ${cor_amarela}]${cor_padrao}\n"
+                 
+        read -p " " resposta
+        resposta=$(echo "$resposta" | tr '[:upper:]' '[:lower:]')
+
+        case $resposta in
+            "s" | "sim") 
+                echo "\nPreparando pacotes de instalação...\n"
+                sudo apt update
+                sudo apt install openssh-server
+                sudo systemctl start ssh
+                sudo systemctl enable ssh
+                sudo systemctl status ssh
+                ;;
+            "n" | "nao")
+                voltarMenu 
+                ;;
+            *) 
+                echo "Opção Inválida..." 
+                ;;
+        esac
+        
     fi
 }
+
 
 # ======================================================================================================================
 
@@ -332,23 +357,24 @@ sair()
 {
 
     echo -e "\nVocê Deseja Realmente sair?"
-    echo -e "${cor_amarela}[ ${cor_padrao}S ${cor_amarela}/${cor_padrao} N ${cor_amarela}]${cor_padrao} - ${cor_amarela}[[${cor_padrao} Sim ${cor_amarela}ou${cor_padrao} Não ${cor_amarela}]]${cor_padrao}\n"
+    echo -e "${cor_amarela}[ ${cor_padrao}Sim ${cor_amarela}ou ${cor_padrao}Não ${cor_amarela}]${cor_padrao}\n"
     
     read -p " " resposta
     resposta=$(echo "$resposta" | tr '[:upper:]' '[:lower:]')
 
     case $resposta in
-        "s") 
+        "s" | "sim") 
             echo "Saindo da aplicação..."
             exit 0
             ;;
-        "n") 
+        "n" | "nao") 
             voltarMenu 
             ;;
         *) 
             echo "Opção Inválida..." 
             ;;
     esac
+
 }
 
 voltarMenu()
@@ -388,7 +414,7 @@ mostrarMenu()
                                     [ /file   ]   [[ Empacotar / Desempacotar ]]
                                     [ /save   ]   [[ Criar um Backup          ]]
                                     [ /sobre  ]   [[ Sobre                    ]]
-                                    [ /exit   ]   [[ Sair                     ]]
+                                    [ /sair   ]   [[ Sair                     ]]
 
 ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
 
