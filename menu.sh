@@ -133,7 +133,8 @@ verificarSSH()
         # Está em execução?
         if sudo systemctl is-active --quiet ssh; then
             echo -e "${cor_verde}O serviço SSH está instalado e em execução!${cor_padrao}\n"
-            read -p $"\nDeseja reinstalar o SSH? [${cor_amarela} Sim ${cor_padrao} ou ${cor_amarela} Não ${cor_padrao}]: " -e reinstall_ssh
+            "\nDeseja reinstalar o SSH? [ ${cor_amarela}Sim ${cor_padrao}ou ${cor_amarela}Não ${cor_padrao}]\n"
+            read -p ":" reinstall_ssh
             reinstall_ssh=$(echo "$reinstall_ssh" | tr '[:upper:]' '[:lower:]')
             case $reinstall_ssh in
                 "s" | "sim") 
@@ -160,8 +161,8 @@ instalarSSH()
 {
     echo -e "\nVocê deseja instalar o SSH em sua máquina?"
     echo -e "\n[ ${cor_amarela}Sim ${cor_padrao}ou ${cor_amarela}Não ${cor_padrao}]\n"
-    
     read -p ":" resposta
+    
     resposta=$(echo "$resposta" | tr '[:upper:]' '[:lower:]')
 
     case $resposta in
