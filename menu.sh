@@ -310,25 +310,39 @@ fileMenu()
     esac
 }
 
-empacotar()
+empacotar() 
 {
     clear
-    echo "### Empacotar Pasta de Arquivos ###"
+    echo "Preparando o script empacotador..."
+    
     read -p "Digite o caminho completo da pasta que deseja empacotar: " caminho_origem
+    
     if [ ! -d "$caminho_origem" ]; then
-        echo -e "${cor_vemelha}Erro: O caminho especificado não corresponde a uma pasta válida!${cor_padrao}"
+        echo -e "${cor_vermelha}Erro: O caminho especificado não corresponde a uma pasta válida!${cor_padrao}"
+        return 1
     fi
 
-    read -p "Digite o nome do arquivo de destino para o pacote (com extensão .tar ou .tar.gz): " nome_arquivo
+    read -p "Digite o caminho completo da pasta de destino para o pacote: " caminho_destino
+    
+    if [ ! -d "$caminho_destino" ]; then
+        echo -e "${cor_vermelha}Erro: O caminho especificado para a pasta de destino não é válido!${cor_padrao}"
+        return 1
+    fi
+
+    read -p "Digite o nome que deve ser criado no pacote (com extensão .tar ou .tar.gz): " nome_arquivo
+
     if [[ ! "$nome_arquivo" =~ \.tar(\.gz)?$ ]]; then
-        echo -e "${cor_vemelha}Erro: O nome do arquivo de destino deve ter a extensão .tar ou .tar.gz!${cor_padrao}"
+        echo -e "${cor_vermelha}Erro: O nome do arquivo de destino deve ter a extensão .tar ou .tar.gz!${cor_padrao}"
+        return 1
     fi
 
-    tar -czf "$nome_arquivo" -C "$(dirname "$caminho_origem")" "$(basename "$caminho_origem")"
+    tar -czf "$caminho_destino/$nome_arquivo" -C "$(dirname "$caminho_origem")" "$(basename "$caminho_origem")"
+    
     if [ $? -eq 0 ]; then
-        echo -e "\n${cor_verde}Pasta empacotada com sucesso em $nome_arquivo!${cor_padrao}\n"
+        echo -e "\n${cor_verde}Pasta empacotada com sucesso em $caminho_destino/$nome_arquivo!${cor_padrao}\n"
     else
-        echo -e "\n${cor_vemelha}Erro ao empacotar a pasta!${cor_padrao}\n"
+        echo -e "\n${cor_vermelha}Erro ao empacotar a pasta!${cor_padrao}\n"
+        return 1
     fi
 }
 
