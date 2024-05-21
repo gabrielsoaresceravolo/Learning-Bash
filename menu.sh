@@ -5,8 +5,9 @@ data=$(date +"%Y-%m-%d")
 cor_vermelha='\033[0;31m'
 cor_verde='\033[0;32m'
 cor_amarela='\033[33m'
-
 cor_padrao='\033[0m'
+
+# ======================================================================================================================
 
 # Informações do Sistema
 infoSistema()
@@ -28,11 +29,15 @@ infoSistema()
     last_update=$(stat -c "%y" /etc/passwd /etc/group /etc/shadow | sort -r | head -n 1 | awk '{print $1}')
     update_status=$(apt list --upgradable 2>/dev/null | wc -l)
 
+    # ======================================================================
+
     if [[ $update_status -gt 1 ]]; then
         system_update="${cor_vermelha}( Desatualizado )${cor_padrao}"
     else
         system_update="${cor_verde}( Atualizado )${cor_padrao}"
     fi
+
+    # ======================================================================
 
     echo -e "▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄\n"
     
@@ -68,6 +73,8 @@ attSistema()
     esac
 }
 
+# ======================================================================
+
 # Função para Atualizar o Sistema
 atualizarBasico()
 {
@@ -79,18 +86,26 @@ atualizarBasico()
         echo -e "\n${cor_vemelha}Erro: Falha ao atualizar lista de pacotes!${cor_padrao}\n"
     fi
 
+    # ====
+
     sudo apt upgrade -y
     if [ $? -ne 0 ]; then
         echo -e "\n${cor_vemelha}Erro: Falha ao atualizar pacotes!${cor_padrao}\n"
     fi
+
+    # ====
 
     sudo apt autoremove -y
     if [ $? -ne 0 ]; then
         echo -e "\n${cor_vemelha}Erro: Falha ao remover pacotes desnecessários!${cor_padrao}\n"
     fi
 
+    # ====
+    
     echo -e "\n\n${cor_verde}Atualização concluída!${cor_padrao}\n\n"
 }
+
+# ======================================================================
 
 # Atualização Geral
 atualizacaoGeral()
@@ -103,20 +118,28 @@ atualizacaoGeral()
         echo -e "\n${cor_vemelha}Erro: Falha ao atualizar lista de pacotes!${cor_padrao}\n"
     fi
 
+    # ====
+
     sudo apt upgrade -y
     if [ $? -ne 0 ]; then
         echo -e "\n${cor_vemelha}Erro: Falha ao atualizar pacotes!${cor_padrao}\n"
     fi
+
+    # ====
 
     sudo apt dist-upgrade -y
     if [ $? -ne 0 ]; then
         echo -e "\n${cor_vemelha}Erro: Falha ao atualizar pacotes com dependências!${cor_padrao}\n"
     fi
 
+    # ====
+
     sudo apt autoremove -y
     if [ $? -ne 0 ]; then
         echo -e "\n${cor_vemelha}Erro: Falha ao remover pacotes desnecessários!${cor_padrao}\n"
     fi
+
+    # ====
 
     echo -e "\n\n${cor_verde}Atualização concluída!${cor_padrao}\n\n"
 }
@@ -151,11 +174,16 @@ verificarSSH()
             echo -e "${cor_amarela}O serviço SSH está instalado, mas não está em execução!${cor_padrao}\n"
             return 1
         fi
+
+    # ====
+        
     else
         echo -e "${cor_vermelha}O serviço SSH não está instalado!${cor_padrao}\n"
         return 1
     fi
 }
+
+# ======================================================================
 
 instalarSSH() 
 {
@@ -189,6 +217,8 @@ instalarSSH()
     esac
 }
 
+# ======================================================================
+
 # Configurar a porta
 configurarPortaSSH() 
 {
@@ -199,6 +229,8 @@ configurarPortaSSH()
     echo -e "\n${cor_verde}Porta SSH configurada para $porta_ssh. Certifique-se de liberar a porta no firewall, se necessário!${cor_padrao}"
 }
 
+# ======================================================================
+
 # Função para autenticação por senha
 configurarSenhaSSH() 
 {
@@ -208,6 +240,8 @@ configurarSenhaSSH()
     sudo systemctl restart ssh
     echo -e "\n${cor_verde}\nAutenticação por senha configurada!${cor_padrao}\n"
 }
+
+# ======================================================================
 
 # Função para configurar o SSH
 configurarSSH() 
@@ -224,6 +258,8 @@ configurarSSH()
         fi
     fi
 }
+
+# ======================================================================
 
 # Função principal
 sshMenu() 
@@ -250,24 +286,34 @@ proxyMenu()
     echo -e "\nPreparando...\n"
     echo -e "Caso queira voltar, digite ${cor_amarela}/menu${cor_padrao}: "
     read -p "Digite o endereço do proxy: " proxy_address
+
+    # ======================================================================
     
     if [ -z "$proxy_address" ]; then
         echo -e "\n${cor_vermelha}Erro: Endereço do proxy não pode estar vazio!${cor_padrao}\n"
         return 1
     fi
 
+    # ======================================================================
+
     echo "Digite a porta do proxy: "
     read -r proxy_port
+
+    # ======================================================================
 
     if [ -z "$proxy_port" ]; then
         echo -e "\n${cor_vermelha}Erro: Porta do proxy não pode estar vazia!${cor_padrao}\n"
         return 1
     fi
 
+    # ======================================================================
+
     # Configurar o proxy
     export http_proxy="$proxy_address:$proxy_port"
     export https_proxy="$proxy_address:$proxy_port"
     export ftp_proxy="$proxy_address:$proxy_port"
+
+    # ======================================================================
 
     # Verifica se houve algum erro!
     if [ $? -eq 0 ]; then
@@ -280,18 +326,18 @@ proxyMenu()
 # ======================================================================================================================
 
 # Função para exibir informações de rede
-redeMenu()
+redeMenu() 
 {
-    echo "\nExibindo informações de rede...\n"
+    # Exibe um cabeçalho
+    echo -e "\nExibindo informações de rede...\n"
 
-    # Exibe informações de interface de rede
+    echo -e "Informações das interfaces de rede:\n"
     sudo ip -c -br a
 
     # Exibe informações da tabela ARP
-    echo -e "\nExibindo a tabela ARP...\n"
+    echo -e "\nInformações da tabela ARP:\n"
     arp -a
 }
-
 
 # ======================================================================================================================
 
@@ -323,10 +369,12 @@ fileMenu()
     esac
 }
 
+# ======================================================================
+
 empacotar() 
 {
     clear
-    echo "Preparando o script empacotador..."
+    echo "Preparando empacotador..."
     
     read -p "Digite o caminho completo da pasta que deseja empacotar: " caminho_origem
     
@@ -335,6 +383,8 @@ empacotar()
         return 1
     fi
 
+    # ===
+
     read -p "Digite o caminho completo da pasta de destino para o pacote: " caminho_destino
     
     if [ ! -d "$caminho_destino" ]; then
@@ -342,14 +392,22 @@ empacotar()
         return 1
     fi
 
+    # ===
+
     read -p "Digite o nome que deve ser criado no pacote (com extensão .tar ou .tar.gz): " nome_arquivo
+
+    # ===
 
     if [[ ! "$nome_arquivo" =~ \.tar(\.gz)?$ ]]; then
         echo -e "${cor_vermelha}Erro: O nome do arquivo de destino deve ter a extensão .tar ou .tar.gz!${cor_padrao}"
         return 1
     fi
 
+    # ===
+
     tar -czf "$caminho_destino/$nome_arquivo" -C "$(dirname "$caminho_origem")" "$(basename "$caminho_origem")"
+
+    # ===
     
     if [ $? -eq 0 ]; then
         echo -e "\n${cor_verde}Pasta empacotada com sucesso em $caminho_destino/$nome_arquivo!${cor_padrao}\n"
@@ -359,26 +417,42 @@ empacotar()
     fi
 }
 
-desempacotar()
+# ======================================================================
+
+desempacotar() 
 {
     clear
-
-    echo "### Desempacotar Pasta de Arquivos ###"
+    echo "Preparando desempacotador..."
+    
     read -p "Digite o caminho completo do arquivo compactado que deseja desempacotar: " caminho_origem
+    
     if [ ! -f "$caminho_origem" ]; then
-        echo -e "\n${cor_vemelha}Erro: O arquivo compactado não existe!${cor_padrao}\n"
+        echo -e "\n${cor_vermelha}Erro: O arquivo compactado não existe!${cor_padrao}\n"
+        return 1
     fi
 
+    # ===
+    
     read -p "Digite o caminho completo do destino para desempacotar o arquivo: " caminho_destino
+
+    # ===
+    
     if [ ! -d "$caminho_destino" ]; then
-        echo -e "\n${cor_vemelha}Erro: O caminho de destino não corresponde a uma pasta válida!${cor_padrao}\n"
+        echo -e "\n${cor_vermelha}Erro: O caminho de destino não corresponde a uma pasta válida!${cor_padrao}\n"
+        return 1
     fi
 
+    # ===
+    
     tar -xzf "$caminho_origem" -C "$caminho_destino"
+
+    # ===
+    
     if [ $? -eq 0 ]; then
         echo -e "\n${cor_verde}Arquivo desempacotado com sucesso em $caminho_destino!${cor_padrao}\n"
     else
-        echo -e "\n${cor_vemelha}Erro ao desempacotar o arquivo!${cor_padrao}\n"
+        echo -e "\n${cor_vermelha}Erro ao desempacotar o arquivo!${cor_padrao}\n"
+        return 1
     fi
 }
 
@@ -399,7 +473,6 @@ backupScript()
     destinoReformulado="$destino/BACKUP.$(basename $origem) - $data"
 
     # ======================================================================
-    # Verifica se os caminhos existem
 
     if [ ! -d "$origem" ]; then
         echo -e "\n${cor_vermelha}Erro: O diretório de origem '$origem' não existe!${cor_padrao}"
@@ -411,14 +484,12 @@ backupScript()
     fi
 
     # ======================================================================
-    # Verifica se os caminhos existem
 
     echo -e "\nIniciando o backup..."
     echo "("$origem") para ("$destinoReformulado")"
     sudo rsync -a --delete "$origem/" "$destinoReformulado/"
 
     # ======================================================================
-    # Verifica se o backup foi criado
 
     if [ $? -eq 0 ]; then
         echo -e "\n${cor_verde}Backup Finalizado com sucesso!${cor_padrao}\n"
@@ -435,6 +506,8 @@ sobreScript()
 {
     echo -e "\nSobre o script...\n"
 }
+
+# ======================================================================================================================
 
 sair()
 {
@@ -459,6 +532,8 @@ sair()
     esac
 
 }
+
+# ======================================================================================================================
 
 voltarMenu()
 {
